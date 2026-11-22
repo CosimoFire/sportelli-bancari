@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Depositi bancari delle famiglie per provincia – Radar QN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,700&display=swap">
+<link rel="stylesheet" href="../assets/radar.css">
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="../assets/radar.js"></script>
+<style>
+  .viste { display: inline-flex; margin: 22px 0 0; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+  .viste button {
+    font: 600 13px var(--sans); color: var(--ink-2); background: transparent; border: 0; padding: 8px 14px; cursor: pointer;
+  }
+  .viste button + button { border-left: 1px solid var(--rule); }
+  .viste button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .scala { margin: 18px 0 4px; }
+  .scala svg { display: block; overflow: visible; }
+  .tile { transition: opacity 180ms ease; }
+  .tile.is-on rect { stroke: var(--ink); stroke-width: 1.5px; }
+</style>
+</head>
+<body>
+<main class="radar">
+  <header>
+    <h1 class="r-title">Quanto tengono in banca le famiglie, provincia per provincia</h1>
+    <p class="r-sub" id="sub">Depositi bancari delle famiglie consumatrici a fine 2025</p>
+  </header>
+
+  <div class="viste" role="group" aria-label="Scegli la vista">
+    <button type="button" data-vista="pc" aria-pressed="true">Euro per abitante</button>
+    <button type="button" data-vista="var" aria-pressed="false">Variazione sul 2024</button>
+  </div>
+
+  <div class="scala" id="scala"></div>
+  <figure class="r-chart" id="mappa" style="margin-top:8px"></figure>
+
+  <footer class="r-foot">
+    <span>Fonte: Banca d'Italia (TDB20290, depositi al 31 dicembre); Istat, popolazione al 1° gennaio</span>
+    <span>Elaborazione Radar – QN</span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var R = Radar, fmt = R.fmt;
+  var VISTE = {
+    pc: {
+      sub: "Depositi bancari delle famiglie consumatrici per abitante a fine 2025. Nei quadrati, migliaia di euro",
+      val: function (d) { return d.pc25; }, lab: function (v) { return fmt(v / 1000, 1); },
+      full: function (v) { return fmt(Math.round(v / 100) * 100, 0) + " euro"; },
+      ticks: [10000, 15000, 20000, 25000, 30000], tick: function (v) { return fmt(v, 0); },
+      dom: [9000, 31000], diverging: false
+    },
+    var: {
+      sub: "Variazione % dei depositi bancari delle famiglie consumatrici per abitante, fine 2025 su fine 2024",
+      val: function (d) { return d.v; }, lab: function (v) { return (v > 0 ? "+" : "") + fmt(v, 1); },
+      full: function (v) { return (v > 0 ? "+" : "") + fmt(v, 1) + "%"; },
+      ticks: [-6, -3, 0, 3, 6], tick: function (v) { return (v > 0 ? "+" : "") + fmt(v, 0) + "%"; },
+      dom: [-6, 0, 6], diverging: true
+    }
+  };
+  var vista = "pc";
+
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function scala(cfg) {
+    if (!cfg.diverging) {
+      var c = d3.piecewise(d3.interpolateRgb, ["--blue-5", "--blue-4", "--blue-3", "--blue-2", "--blue-1"].map(css));
+      return function (v) { return c(Math.max(0, Math.min(1, (v - cfg.dom[0]) / (cfg.dom[1] - cfg.dom[0])))); };
+    }
+    // divergente: rosso sotto lo zero, grigio chiaro al centro, blu sopra
+    var neg = d3.piecewise(d3.interpolateRgb, [css("--red-2"), css("--red-4"), css("--grey-5")]);
+    var pos = d3.piecewise(d3.interpolateRgb, [css("--grey-5"), css("--blue-4"), css("--blue-2"), css("--blue-1")]);
+    return function (v) {
+      return v < 0 ? neg(Math.max(0, Math.min(1, 1 - v / cfg.dom[0]))) : pos(Math.max(0, Math.min(1, v / cfg.dom[2])));
+    };
+  }
+  function scuro(col) { var c = d3.rgb(col); return (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255 < 0.5; }
+
+  Promise.all([R.loadCSV("../data/depositi-province.csv"), R.loadCSV("../data/griglia-province.csv")]).then(function (res) {
+    var pos = {};
+    res[1].forEach(function (r) { pos[r["Sigla"]] = { c: R.num(r["Colonna"]), r: R.num(r["Riga"]) }; });
+    var it = null, prov = [];
+    res[0].forEach(function (r) {
+      var d = {
+        sig: r["Sigla"], nome: r["Provincia"].split("/")[0].replace("Valle d'Aosta", "Aosta"), reg: r["Regione"].split("/")[0],
+        dep: R.num(r["Depositi famiglie consumatrici 31/12/2025 (euro)"]),
+        pc25: R.num(r["Depositi pro capite 2025 (euro)"]), pc24: R.num(r["Depositi pro capite 2024 (euro)"]),
+        v: R.num(r["Variazione % pro capite 2024-2025"])
+      };
+      if (d.sig === "IT") it = d; else { d.p = pos[d.sig]; if (d.p) prov.push(d); }
+    });
+    var NC = d3.max(prov, function (d) { return d.p.c; }) + 1, NR = d3.max(prov, function (d) { return d.p.r; }) + 1;
+
+    var host = document.getElementById("mappa"), tip = R.tooltip(host), tiles;
+    R.dismissOutside(host, function () { tip.hide(); if (tiles) tiles.classed("is-dimmed is-on", false); });
+
+    function tipFor(d) {
+      return R.tipHTML({
+        title: d.nome + " (" + d.sig + ")", value: fmt(Math.round(d.pc25 / 100) * 100, 0), unit: "euro per abitante",
+        rows: [["Fine 2024", fmt(Math.round(d.pc24 / 100) * 100, 0) + " euro"],
+               ["Variazione", (d.v > 0 ? "+" : "") + fmt(d.v, 1) + "%"],
+               ["Depositi totali", fmt(d.dep / 1e9, 2) + " miliardi"]],
+        note: d.reg
+      });
+    }
+
+    function legenda(W, cfg, col) {
+      var lw = Math.min(320, W - 20), lh = 10;
+      var x = d3.scaleLinear().domain([cfg.dom[0], cfg.dom[cfg.dom.length - 1]]).range([0, lw]);
+      d3.select("#scala").selectAll("*").remove();
+      var svg = d3.select("#scala").append("svg").attr("width", lw + 20).attr("height", 52).attr("aria-hidden", "true");
+      var id = "grad-" + vista, g = svg.append("defs").append("linearGradient").attr("id", id);
+      d3.range(0, 1.0001, 0.05).forEach(function (t) {
+        g.append("stop").attr("offset", t).attr("stop-color", col(x.invert(t * lw)));
+      });
+      svg.append("rect").attr("x", 0).attr("y", 20).attr("width", lw).attr("height", lh).attr("rx", 2).attr("fill", "url(#" + id + ")");
+      cfg.ticks.forEach(function (t, i) {
+        svg.append("line").attr("x1", x(t)).attr("x2", x(t)).attr("y1", 20 + lh).attr("y2", 34).style("stroke", "var(--ink-2)").attr("stroke-width", 0.75);
+        svg.append("text").attr("class", "tick-label").attr("x", x(t)).attr("y", 47)
+          .attr("text-anchor", i === 0 ? "start" : i === cfg.ticks.length - 1 ? "end" : "middle").text(cfg.tick(t));
+      });
+      var iv = cfg.val(it), ix = x(iv);
+      svg.append("path").attr("d", "M" + ix + ",18L" + (ix - 4) + ",11H" + (ix + 4) + "Z").style("fill", "var(--ink)");
+      svg.append("text").attr("class", "series-label").attr("x", ix + 7).attr("y", 14).style("font-size", "12px")
+        .text("Italia " + cfg.full(iv));
+    }
+
+    R.responsive(host, function (W, phase) {
+      var cfg = VISTE[vista], col = scala(cfg);
+      d3.select("#sub").text(cfg.sub);
+      legenda(W, cfg, col);
+      var gap = W < 520 ? 2 : 3;
+      var cell = Math.floor((W - gap * (NC - 1)) / NC), step = cell + gap;
+      var H = NR * step;
+      var showSig = cell >= 30, showVal = cell >= 42;
+      d3.select(host).select("svg").remove();
+      var svg = d3.select(host).insert("svg", ".r-tip").attr("width", W).attr("height", H).attr("role", "img")
+        .attr("aria-label", vista === "pc"
+          ? "Cartogramma delle province: depositi delle famiglie per abitante a fine 2025, da " + VISTE.pc.full(d3.min(prov, cfg.val)) + " a " + VISTE.pc.full(d3.max(prov, cfg.val)) + "."
+          : "Cartogramma delle province: variazione dei depositi per abitante sul 2024, da " + VISTE.var.full(d3.min(prov, cfg.val)) + " a " + VISTE.var.full(d3.max(prov, cfg.val)) + ".");
+      tiles = svg.append("g").selectAll("g").data(prov).join("g").attr("class", "tile mark")
+        .attr("transform", function (d) { return "translate(" + d.p.c * step + "," + d.p.r * step + ")"; });
+      var rects = tiles.append("rect").attr("width", cell).attr("height", cell).attr("rx", 2);
+      R.enter(rects, phase,
+        function (s) { s.style("fill", "var(--grey-5)"); },
+        function (s) { s.style("fill", function (d) { return col(cfg.val(d)); }); });
+      tiles.each(function (d) {
+        var c = col(cfg.val(d)), t = d3.select(this), ink = scuro(c) ? "#ffffff" : "#1a1a1a";
+        if (showSig) t.append("text").attr("x", cell / 2).attr("y", showVal ? cell * 0.42 : cell / 2).attr("dy", "0.35em")
+          .attr("text-anchor", "middle").style("font-size", (cell >= 42 ? 12 : 10) + "px").style("font-weight", 600).style("fill", ink).text(d.sig);
+        if (showVal) t.append("text").attr("x", cell / 2).attr("y", cell * 0.72).attr("dy", "0.35em")
+          .attr("text-anchor", "middle").style("font-size", "10.5px").style("fill", ink).text(cfg.lab(cfg.val(d)));
+      });
+      tiles.on("pointerenter pointerdown", function (ev, d) {
+        tiles.classed("is-dimmed", function (q) { return q !== d; }).classed("is-on", function (q) { return q === d; });
+        tip.show(tipFor(d), d.p.c * step + cell / 2, d.p.r * step + cell / 2);
+      }).on("pointerleave", function (ev) {
+        if (ev.pointerType === "mouse") { tip.hide(); tiles.classed("is-dimmed is-on", false); }
+      });
+    });
+
+    // cambio vista: ridisegna con un passaggio di colore
+    d3.selectAll(".viste button").on("click", function () {
+      var v = this.getAttribute("data-vista");
+      if (v === vista) return;
+      vista = v;
+      d3.selectAll(".viste button").attr("aria-pressed", function () { return this.getAttribute("data-vista") === vista; });
+      var cfg = VISTE[vista], col = scala(cfg), W = Math.floor(host.getBoundingClientRect().width);
+      d3.select("#sub").text(cfg.sub);
+      legenda(W, cfg, col);
+      tiles.select("rect").transition().duration(R.reduced ? 0 : 450).style("fill", function (d) { return col(cfg.val(d)); });
+      tiles.each(function (d) {
+        var c = col(cfg.val(d)), ink = scuro(c) ? "#ffffff" : "#1a1a1a", tx = d3.select(this).selectAll("text");
+        tx.style("fill", ink);
+        if (tx.size() === 2) d3.select(tx.nodes()[1]).text(cfg.lab(cfg.val(d)));
+      });
+    });
+  }).catch(function (e) { R.fail("#mappa", e); });
+})();
+</script>
+</body>
+</html>
