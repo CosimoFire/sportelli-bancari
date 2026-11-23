@@ -19,11 +19,11 @@
   .viste button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
   .scala { margin: 18px 0 4px; }
   .scala svg { display: block; overflow: visible; }
-  .tile { transition: opacity 180ms ease; }
-  .tile.is-on rect { stroke: var(--ink); stroke-width: 1.5px; }
+  .prov { stroke: var(--bg); stroke-width: 0.5px; stroke-linejoin: round; transition: opacity 180ms ease; }
   /* prime e ultime 3 della vista: contorno pieno o tratteggiato */
-  .tile.top3 rect { stroke: var(--ink); stroke-width: 2.25px; }
-  .tile.bot3 rect { stroke: var(--ink); stroke-width: 2.25px; stroke-dasharray: 4 2.5; }
+  .evidenze path { fill: none; stroke: var(--ink); stroke-width: 2px; stroke-linejoin: round; pointer-events: none; }
+  .evidenze path.trat { stroke-dasharray: 4 2.5; }
+  .evidenze path.hover { stroke-width: 1.5px; stroke-dasharray: none; }
   .estremi { display: flex; flex-wrap: wrap; gap: 6px 36px; margin: 6px 0 0; font-size: 13px; color: var(--ink); }
   .estremi h3 { display: flex; align-items: center; gap: 7px; margin: 0 0 4px; font: 600 13px var(--sans); }
   .estremi ol { margin: 0; padding: 0 0 0 18px; font-variant-numeric: tabular-nums; }
@@ -60,7 +60,7 @@
   var R = Radar, fmt = R.fmt;
   var VISTE = {
     pc: {
-      sub: "Depositi bancari delle famiglie consumatrici per abitante a fine 2025. Nei quadrati, migliaia di euro",
+      sub: "Depositi bancari delle famiglie consumatrici per abitante a fine 2025, in euro",
       val: function (d) { return d.pc25; }, lab: function (v) { return fmt(v / 1000, 1); },
       full: function (v) { return fmt(Math.round(v / 100) * 100, 0) + " euro"; },
       ticks: [10000, 15000, 20000, 25000, 30000], tick: function (v) { return fmt(v, 0); },
@@ -91,10 +91,8 @@
   }
   function scuro(col) { var c = d3.rgb(col); return (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255 < 0.5; }
 
-  Promise.all([R.loadCSV("../data/depositi-province.csv"), R.loadCSV("../data/griglia-province.csv")]).then(function (res) {
-    var pos = {};
-    res[1].forEach(function (r) { pos[r["Sigla"]] = { c: R.num(r["Colonna"]), r: R.num(r["Riga"]) }; });
-    var it = null, prov = [];
+  Promise.all([R.loadCSV("../data/depositi-province.csv"), d3.json("../data/province.geojson")]).then(function (res) {
+    var it = null, bySig = {};
     res[0].forEach(function (r) {
       var d = {
         sig: r["Sigla"], nome: r["Provincia"].split("/")[0].replace("Valle d'Aosta", "Aosta"), reg: r["Regione"].split("/")[0],
@@ -102,12 +100,17 @@
         pc25: R.num(r["Depositi pro capite 2025 (euro)"]), pc24: R.num(r["Depositi pro capite 2024 (euro)"]),
         v: R.num(r["Variazione % pro capite 2024-2025"])
       };
-      if (d.sig === "IT") it = d; else { d.p = pos[d.sig]; if (d.p) prov.push(d); }
+      if (d.sig === "IT") it = d; else bySig[d.sig] = d;
     });
-    var NC = d3.max(prov, function (d) { return d.p.c; }) + 1, NR = d3.max(prov, function (d) { return d.p.r; }) + 1;
+    var geo = res[1];
+    // ogni provincia del file dei confini prende i suoi dati (stessa sigla)
+    geo.features.forEach(function (f) { f.d = bySig[f.properties.sigla]; });
+    var feats = geo.features.filter(function (f) { return f.d; });
+    var prov = feats.map(function (f) { return f.d; });
 
-    var host = document.getElementById("mappa"), tip = R.tooltip(host), tiles;
-    R.dismissOutside(host, function () { tip.hide(); if (tiles) tiles.classed("is-dimmed is-on", false); });
+    var host = document.getElementById("mappa"), tip = R.tooltip(host), paths, evid, path;
+    function spegni() { if (paths) paths.classed("is-dimmed", false); if (evid) evid.selectAll(".hover").remove(); }
+    R.dismissOutside(host, function () { tip.hide(); spegni(); });
 
     function tipFor(d) {
       return R.tipHTML({
@@ -119,7 +122,7 @@
       });
     }
 
-    // prime e ultime 3 province della vista corrente: elenco sopra la mappa e contorno sui quadrati
+    // prime e ultime 3 province della vista corrente: elenco sopra la mappa e contorno sulla mappa
     function estremi(cfg) {
       var ord = prov.slice().sort(function (a, b) { return cfg.val(b) - cfg.val(a); });
       var top = ord.slice(0, 3), bot = ord.slice(-3).reverse();
@@ -128,7 +131,10 @@
       d3.select("#estremi").html(
         '<div><h3><i class="anello"></i>' + lab[0] + "</h3><ol>" + top.map(riga).join("") + "</ol></div>" +
         '<div><h3><i class="anello trat"></i>' + lab[1] + "</h3><ol>" + bot.map(riga).join("") + "</ol></div>");
-      if (tiles) tiles.classed("top3", function (d) { return top.indexOf(d) >= 0; }).classed("bot3", function (d) { return bot.indexOf(d) >= 0; });
+      if (!evid) return;
+      var sel = feats.filter(function (f) { return top.indexOf(f.d) >= 0 || bot.indexOf(f.d) >= 0; });
+      evid.selectAll("path.evid").data(sel, function (f) { return f.d.sig; }).join("path").attr("class", "evid")
+        .attr("d", path).classed("trat", function (f) { return bot.indexOf(f.d) >= 0; });
     }
 
     function legenda(W, cfg, col) {
@@ -156,33 +162,27 @@
       var cfg = VISTE[vista], col = scala(cfg);
       d3.select("#sub").text(cfg.sub);
       legenda(W, cfg, col);
-      var gap = W < 520 ? 2 : 3;
-      var cell = Math.floor((W - gap * (NC - 1)) / NC), step = cell + gap;
-      var H = NR * step;
-      var showSig = cell >= 30, showVal = cell >= 42;
+      var H = Math.round(W * 1.16);
+      var proj = d3.geoConicConformal().parallels([38, 46]).rotate([-12.5, 0]).fitSize([W, H], geo);
+      path = d3.geoPath(proj);
       d3.select(host).select("svg").remove();
       var svg = d3.select(host).insert("svg", ".r-tip").attr("width", W).attr("height", H).attr("role", "img")
         .attr("aria-label", vista === "pc"
-          ? "Cartogramma delle province: depositi delle famiglie per abitante a fine 2025, da " + VISTE.pc.full(d3.min(prov, cfg.val)) + " a " + VISTE.pc.full(d3.max(prov, cfg.val)) + "."
-          : "Cartogramma delle province: variazione dei depositi per abitante sul 2024, da " + VISTE.var.full(d3.min(prov, cfg.val)) + " a " + VISTE.var.full(d3.max(prov, cfg.val)) + ".");
-      tiles = svg.append("g").selectAll("g").data(prov).join("g").attr("class", "tile mark")
-        .attr("transform", function (d) { return "translate(" + d.p.c * step + "," + d.p.r * step + ")"; });
-      var rects = tiles.append("rect").attr("width", cell).attr("height", cell).attr("rx", 2);
-      R.enter(rects, phase,
+          ? "Mappa delle province: depositi delle famiglie per abitante a fine 2025, da " + VISTE.pc.full(d3.min(prov, cfg.val)) + " a " + VISTE.pc.full(d3.max(prov, cfg.val)) + "."
+          : "Mappa delle province: variazione dei depositi per abitante sul 2024, da " + VISTE.var.full(d3.min(prov, cfg.val)) + " a " + VISTE.var.full(d3.max(prov, cfg.val)) + ".");
+      paths = svg.append("g").selectAll("path").data(feats).join("path").attr("class", "prov mark").attr("d", path);
+      R.enter(paths, phase,
         function (s) { s.style("fill", "var(--grey-5)"); },
-        function (s) { s.style("fill", function (d) { return col(cfg.val(d)); }); });
-      tiles.each(function (d) {
-        var c = col(cfg.val(d)), t = d3.select(this), ink = scuro(c) ? "#ffffff" : "#1a1a1a";
-        if (showSig) t.append("text").attr("x", cell / 2).attr("y", showVal ? cell * 0.42 : cell / 2).attr("dy", "0.35em")
-          .attr("text-anchor", "middle").style("font-size", (cell >= 42 ? 12 : 10) + "px").style("font-weight", 600).style("fill", ink).text(d.sig);
-        if (showVal) t.append("text").attr("x", cell / 2).attr("y", cell * 0.72).attr("dy", "0.35em")
-          .attr("text-anchor", "middle").style("font-size", "10.5px").style("fill", ink).text(cfg.lab(cfg.val(d)));
-      });
-      tiles.on("pointerenter pointerdown", function (ev, d) {
-        tiles.classed("is-dimmed", function (q) { return q !== d; }).classed("is-on", function (q) { return q === d; });
-        tip.show(tipFor(d), d.p.c * step + cell / 2, d.p.r * step + cell / 2);
+        function (s) { s.style("fill", function (f) { return col(cfg.val(f.d)); }); });
+      evid = svg.append("g").attr("class", "evidenze");
+      paths.on("pointerenter pointerdown", function (ev, f) {
+        paths.classed("is-dimmed", function (q) { return q !== f; });
+        evid.selectAll(".hover").remove();
+        evid.append("path").attr("class", "hover").attr("d", path(f));
+        var c = path.centroid(f);
+        tip.show(tipFor(f.d), c[0], c[1]);
       }).on("pointerleave", function (ev) {
-        if (ev.pointerType === "mouse") { tip.hide(); tiles.classed("is-dimmed is-on", false); }
+        if (ev.pointerType === "mouse") { tip.hide(); spegni(); }
       });
       estremi(cfg);
     });
@@ -196,12 +196,7 @@
       var cfg = VISTE[vista], col = scala(cfg), W = Math.floor(host.getBoundingClientRect().width);
       d3.select("#sub").text(cfg.sub);
       legenda(W, cfg, col);
-      tiles.select("rect").transition().duration(R.reduced ? 0 : 450).style("fill", function (d) { return col(cfg.val(d)); });
-      tiles.each(function (d) {
-        var c = col(cfg.val(d)), ink = scuro(c) ? "#ffffff" : "#1a1a1a", tx = d3.select(this).selectAll("text");
-        tx.style("fill", ink);
-        if (tx.size() === 2) d3.select(tx.nodes()[1]).text(cfg.lab(cfg.val(d)));
-      });
+      paths.transition().duration(R.reduced ? 0 : 450).style("fill", function (f) { return col(cfg.val(f.d)); });
       estremi(cfg);
     });
   }).catch(function (e) { R.fail("#mappa", e); });
