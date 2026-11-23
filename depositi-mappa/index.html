@@ -24,11 +24,14 @@
   .evidenze path { fill: none; stroke: var(--ink); stroke-width: 2px; stroke-linejoin: round; pointer-events: none; }
   .evidenze path.trat { stroke-dasharray: 4 2.5; }
   .evidenze path.hover { stroke-width: 1.5px; stroke-dasharray: none; }
-  .estremi { display: flex; flex-wrap: wrap; gap: 6px 36px; margin: 6px 0 0; font-size: 13px; color: var(--ink); }
-  .estremi h3 { display: flex; align-items: center; gap: 7px; margin: 0 0 4px; font: 600 13px var(--sans); }
-  .estremi ol { margin: 0; padding: 0 0 0 18px; font-variant-numeric: tabular-nums; }
-  .estremi li { margin: 1px 0; }
-  .estremi li b { font-weight: 600; }
+  .estremi { display: flex; flex-wrap: wrap; gap: 6px 24px; margin: 4px 0 0; font-size: 13px; color: var(--ink-2); }
+  .estremi span { display: inline-flex; align-items: center; gap: 7px; }
+  .ragno text { font-size: 12.5px; fill: var(--ink); paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; font-variant-numeric: tabular-nums; }
+  .ragno text.nome { font-weight: 600; }
+  .ragno .filo { fill: none; stroke: var(--ink); stroke-width: 0.75px; }
+  .ragno .filo.trat { stroke-dasharray: 2 2; }
+  .ragno circle { fill: var(--ink); }
+  @media (max-width: 519px) { .ragno text { font-size: 11px; } }
   .estremi .anello { width: 12px; height: 12px; border-radius: 2px; border: 2px solid var(--ink); box-sizing: border-box; }
   .estremi .anello.trat { border-style: dashed; }
 </style>
@@ -122,19 +125,52 @@
       });
     }
 
-    // prime e ultime 3 province della vista corrente: elenco sopra la mappa e contorno sulla mappa
+    // prime e ultime 3 province della vista corrente: contorno sulla mappa ed etichetta con linea di richiamo
+    var geom = null;   // {W, H, mx}: larghezza, altezza e asse centrale della mappa, aggiornati a ogni disegno
     function estremi(cfg) {
       var ord = prov.slice().sort(function (a, b) { return cfg.val(b) - cfg.val(a); });
       var top = ord.slice(0, 3), bot = ord.slice(-3).reverse();
-      var riga = function (d) { return "<li>" + d.nome + " <b>" + cfg.full(cfg.val(d)) + "</b></li>"; };
       var lab = vista === "pc" ? ["Le 3 con più depositi", "Le 3 con meno depositi"] : ["Le 3 con la crescita più alta", "Le 3 con la crescita più bassa"];
-      d3.select("#estremi").html(
-        '<div><h3><i class="anello"></i>' + lab[0] + "</h3><ol>" + top.map(riga).join("") + "</ol></div>" +
-        '<div><h3><i class="anello trat"></i>' + lab[1] + "</h3><ol>" + bot.map(riga).join("") + "</ol></div>");
-      if (!evid) return;
+      d3.select("#estremi").html('<span><i class="anello"></i>' + lab[0] + '</span><span><i class="anello trat"></i>' + lab[1] + "</span>");
+      if (!evid || !geom) return;
       var sel = feats.filter(function (f) { return top.indexOf(f.d) >= 0 || bot.indexOf(f.d) >= 0; });
       evid.selectAll("path.evid").data(sel, function (f) { return f.d.sig; }).join("path").attr("class", "evid")
         .attr("d", path).classed("trat", function (f) { return bot.indexOf(f.d) >= 0; });
+
+      // etichette nei margini: a sinistra le province a ovest dell'asse centrale, a destra le altre
+      var narrow = geom.W < 520, LH = narrow ? 30 : 34;
+      var items = sel.map(function (f) {
+        var c = path.centroid(f);
+        return { f: f, cx: c[0], cy: c[1], left: c[0] < geom.mx, y: c[1], trat: bot.indexOf(f.d) >= 0 };
+      });
+      [true, false].forEach(function (lato) {
+        var g = items.filter(function (it) { return it.left === lato; }).sort(function (a, b) { return a.cy - b.cy; });
+        // niente sovrapposizioni: si scende di almeno LH, poi si risale se si esce dal fondo
+        for (var i = 1; i < g.length; i++) g[i].y = Math.max(g[i].y, g[i - 1].y + LH);
+        var over = g.length ? g[g.length - 1].y - (geom.H - 14) : 0;
+        if (over > 0) g.forEach(function (it) { it.y -= over; });
+        for (i = g.length - 2; i >= 0; i--) g[i].y = Math.min(g[i].y, g[i + 1].y - LH);
+        g.forEach(function (it) { it.y = Math.max(16, it.y); });
+      });
+      var lx = function (it) { return it.left ? 2 : geom.W - 2; };
+      var lab2 = evid.selectAll("g.ragno").data(items, function (it) { return it.f.d.sig; }).join(function (e) {
+        var g = e.append("g").attr("class", "ragno");
+        g.append("path").attr("class", "filo");
+        g.append("circle").attr("r", 1.75);
+        g.append("text").attr("class", "nome");
+        g.append("text").attr("class", "valore");
+        return g;
+      });
+      lab2.each(function (it) {
+        var g = d3.select(this), x = lx(it), anchor = it.left ? "start" : "end";
+        var tx = g.select(".nome").attr("x", x).attr("y", it.y - 3).attr("text-anchor", anchor).text(it.f.d.nome);
+        g.select(".valore").attr("x", x).attr("y", it.y + 12).attr("text-anchor", anchor).text(cfg.full(cfg.val(it.f.d)));
+        var bw = Math.max(tx.node().getComputedTextLength(), g.select(".valore").node().getComputedTextLength());
+        var ex = it.left ? x + bw + 5 : x - bw - 5;      // bordo dell'etichetta verso la mappa
+        g.select(".filo").attr("d", "M" + ex + "," + (it.y + 1) + "H" + (it.left ? Math.min(ex + 8, it.cx) : Math.max(ex - 8, it.cx)) + "L" + it.cx + "," + it.cy)
+          .classed("trat", it.trat);
+        g.select("circle").attr("cx", it.cx).attr("cy", it.cy);
+      });
     }
 
     function legenda(W, cfg, col) {
@@ -163,7 +199,11 @@
       d3.select("#sub").text(cfg.sub);
       legenda(W, cfg, col);
       var H = Math.round(W * 1.16);
-      var proj = d3.geoConicConformal().parallels([38, 46]).rotate([-12.5, 0]).fitSize([W, H], geo);
+      // margini laterali per le etichette con linea di richiamo
+      var M = W < 520 ? 74 : 118;
+      var proj = d3.geoConicConformal().parallels([38, 46]).rotate([-12.5, 0]).fitExtent([[M, 4], [W - M, H - 4]], geo);
+      // asse che divide le etichette: a ovest di 13,2° E (Trapani compresa) vanno a sinistra
+      geom = { W: W, H: H, mx: proj([13.2, 42])[0] };
       path = d3.geoPath(proj);
       d3.select(host).select("svg").remove();
       var svg = d3.select(host).insert("svg", ".r-tip").attr("width", W).attr("height", H).attr("role", "img")
