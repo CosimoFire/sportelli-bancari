@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quota di imprese in comuni senza sportello, per regione – Radar QN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,700&display=swap">
+<link rel="stylesheet" href="../assets/radar.css">
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="../assets/radar.js"></script>
+<style>
+  /* grafico statico disegnato per il tema chiaro: resta sul suo fondo grigio */
+  .radar { padding: 0; }
+  .radar svg.static { display: block; width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<main class="radar">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 828" class="static" role="img" aria-labelledby="t d">
+<title id="t">Quota di imprese in comuni senza sportello bancario, a parità di dimensione dei comuni</title>
+<desc id="d">Cartogramma a quadrati delle regioni. Quota standardizzata: Campania 14,3%, Calabria 13,0%, Sicilia 9,5%, Puglia 9,4%, Lazio 7,7%, Molise 7,6%, Piemonte 6,3%, Valle d'Aosta 5,8%, Basilicata 5,4%, Liguria 5,3%, Abruzzo 5,0%, Lombardia 5,0%, Umbria 4,9%, Veneto 4,2%, Marche 4,0%, Friuli-Venezia Giulia 2,8%, Toscana 2,1%, Emilia-Romagna 1,9%, Sardegna 1,7%, Trentino-Alto Adige 0,6%. Media italiana 5,9%.</desc>
+<style>@import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,700&amp;display=swap");.t{font-family:Newsreader,Georgia,serif;font-weight:700;font-size:31px;fill:#0c0c0c}.s{font-family:'Libre Franklin','Helvetica Neue',Arial,sans-serif}text{font-variant-numeric:tabular-nums}</style>
+<defs><linearGradient id="scala" x1="0" x2="1" y1="0" y2="0"><stop offset="0.00" stop-color="#b3dcfd"/><stop offset="0.25" stop-color="#76b7f7"/><stop offset="0.50" stop-color="#3f8bed"/><stop offset="0.75" stop-color="#1354d9"/><stop offset="1.00" stop-color="#132856"/></linearGradient></defs>
+<rect width="760" height="828" fill="#f7f8f9"/>
+<text class="t" x="16" y="48">Quota di imprese in comuni senza sportello</text>
+<text class="s" x="16" y="78" font-size="14" fill="#6b6b6b">Unità locali delle imprese nel 2024, per regione, a parità di dimensione dei comuni. Italia: 5,9%</text>
+<rect x="16" y="114" width="300" height="10" rx="2" fill="url(#scala)"/>
+<line x1="16.0" x2="16.0" y1="124" y2="128" stroke="#6b6b6b" stroke-width="0.75"/>
+<text class="s" x="16.0" y="142" text-anchor="start" font-size="12" fill="#6b6b6b">0%</text>
+<line x1="116.0" x2="116.0" y1="124" y2="128" stroke="#6b6b6b" stroke-width="0.75"/>
+<text class="s" x="116.0" y="142" text-anchor="middle" font-size="12" fill="#6b6b6b">5%</text>
+<line x1="216.0" x2="216.0" y1="124" y2="128" stroke="#6b6b6b" stroke-width="0.75"/>
+<text class="s" x="216.0" y="142" text-anchor="middle" font-size="12" fill="#6b6b6b">10%</text>
+<line x1="316.0" x2="316.0" y1="124" y2="128" stroke="#6b6b6b" stroke-width="0.75"/>
+<text class="s" x="316.0" y="142" text-anchor="end" font-size="12" fill="#6b6b6b">15%</text>
+<path d="M134.0,107L130.0,101H138.0Z" fill="#1a1a1a"/>
+<text class="s" x="142.0" y="108" font-size="12" fill="#1a1a1a">Italia 5,9%</text>
+<g><title>Valle d'Aosta: 5,8% (quota reale 29,5%)</title><rect x="113.0" y="168.0" width="72" height="72" rx="2" fill="#589ff2"/><text class="s" x="122.0" y="188.0" font-size="13" font-weight="600" fill="#1a1a1a">VdA</text><text class="s" x="122.0" y="230.0" font-size="16" font-weight="700" fill="#1a1a1a">5,8%</text></g>
+<g><title>Trentino-Alto Adige: 0,6% (quota reale 1,7%)</title><rect x="267.0" y="168.0" width="72" height="72" rx="2" fill="#a9d6fc"/><text class="s" x="276.0" y="188.0" font-size="13" font-weight="600" fill="#1a1a1a">TAA</text><text class="s" x="276.0" y="230.0" font-size="16" font-weight="700" fill="#1a1a1a">0,6%</text></g>
+<g><title>Piemonte: 6,3% (quota reale 12,5%)</title><rect x="113.0" y="245.0" width="72" height="72" rx="2" fill="#5199f0"/><text class="s" x="122.0" y="265.0" font-size="13" font-weight="600" fill="#1a1a1a">Pie</text><text class="s" x="122.0" y="307.0" font-size="16" font-weight="700" fill="#1a1a1a">6,3%</text></g>
+<g><title>Lombardia: 5,0% (quota reale 5,4%)</title><rect x="190.0" y="245.0" width="72" height="72" rx="2" fill="#64a8f4"/><text class="s" x="199.0" y="265.0" font-size="13" font-weight="600" fill="#1a1a1a">Lom</text><text class="s" x="199.0" y="307.0" font-size="16" font-weight="700" fill="#1a1a1a">5,0%</text></g>
+<g><title>Veneto: 4,2% (quota reale 3,1%)</title><rect x="267.0" y="245.0" width="72" height="72" rx="2" fill="#6fb2f6"/><text class="s" x="276.0" y="265.0" font-size="13" font-weight="600" fill="#1a1a1a">Ven</text><text class="s" x="276.0" y="307.0" font-size="16" font-weight="700" fill="#1a1a1a">4,2%</text></g>
+<g><title>Friuli-Venezia Giulia: 2,8% (quota reale 4,1%)</title><rect x="344.0" y="245.0" width="72" height="72" rx="2" fill="#85c0f9"/><text class="s" x="353.0" y="265.0" font-size="13" font-weight="600" fill="#1a1a1a">FVG</text><text class="s" x="353.0" y="307.0" font-size="16" font-weight="700" fill="#1a1a1a">2,8%</text></g>
+<g><title>Liguria: 5,3% (quota reale 5,8%)</title><rect x="190.0" y="322.0" width="72" height="72" rx="2" fill="#5fa5f3"/><text class="s" x="199.0" y="342.0" font-size="13" font-weight="600" fill="#1a1a1a">Lig</text><text class="s" x="199.0" y="384.0" font-size="16" font-weight="700" fill="#1a1a1a">5,3%</text></g>
+<g><title>Emilia-Romagna: 1,9% (quota reale 0,6%)</title><rect x="267.0" y="322.0" width="72" height="72" rx="2" fill="#94c9fa"/><text class="s" x="276.0" y="342.0" font-size="13" font-weight="600" fill="#1a1a1a">ER</text><text class="s" x="276.0" y="384.0" font-size="16" font-weight="700" fill="#1a1a1a">1,9%</text></g>
+<g><title>Toscana: 2,1% (quota reale 1,0%)</title><rect x="267.0" y="399.0" width="72" height="72" rx="2" fill="#91c7fa"/><text class="s" x="276.0" y="419.0" font-size="13" font-weight="600" fill="#1a1a1a">Tos</text><text class="s" x="276.0" y="461.0" font-size="16" font-weight="700" fill="#1a1a1a">2,1%</text></g>
+<g><title>Umbria: 4,9% (quota reale 4,5%)</title><rect x="344.0" y="399.0" width="72" height="72" rx="2" fill="#65aaf4"/><text class="s" x="353.0" y="419.0" font-size="13" font-weight="600" fill="#1a1a1a">Umb</text><text class="s" x="353.0" y="461.0" font-size="16" font-weight="700" fill="#1a1a1a">4,9%</text></g>
+<g><title>Marche: 4,0% (quota reale 5,5%)</title><rect x="421.0" y="399.0" width="72" height="72" rx="2" fill="#72b4f6"/><text class="s" x="430.0" y="419.0" font-size="13" font-weight="600" fill="#1a1a1a">Mar</text><text class="s" x="430.0" y="461.0" font-size="16" font-weight="700" fill="#1a1a1a">4,0%</text></g>
+<g><title>Lazio: 7,7% (quota reale 2,8%)</title><rect x="344.0" y="476.0" width="72" height="72" rx="2" fill="#3d88ec"/><text class="s" x="353.0" y="496.0" font-size="13" font-weight="600" fill="#1a1a1a">Laz</text><text class="s" x="353.0" y="538.0" font-size="16" font-weight="700" fill="#1a1a1a">7,7%</text></g>
+<g><title>Abruzzo: 5,0% (quota reale 9,5%)</title><rect x="421.0" y="476.0" width="72" height="72" rx="2" fill="#64a8f4"/><text class="s" x="430.0" y="496.0" font-size="13" font-weight="600" fill="#1a1a1a">Abr</text><text class="s" x="430.0" y="538.0" font-size="16" font-weight="700" fill="#1a1a1a">5,0%</text></g>
+<g><title>Molise: 7,6% (quota reale 27,9%)</title><rect x="498.0" y="476.0" width="72" height="72" rx="2" fill="#3e8aec"/><text class="s" x="507.0" y="496.0" font-size="13" font-weight="600" fill="#1a1a1a">Mol</text><text class="s" x="507.0" y="538.0" font-size="16" font-weight="700" fill="#1a1a1a">7,6%</text></g>
+<g><title>Puglia: 9,4% (quota reale 3,7%)</title><rect x="575.0" y="476.0" width="72" height="72" rx="2" fill="#296fe3"/><text class="s" x="584.0" y="496.0" font-size="13" font-weight="600" fill="#ffffff">Pug</text><text class="s" x="584.0" y="538.0" font-size="16" font-weight="700" fill="#ffffff">9,4%</text></g>
+<g><title>Sardegna: 1,7% (quota reale 3,6%)</title><rect x="190.0" y="553.0" width="72" height="72" rx="2" fill="#97cbfa"/><text class="s" x="199.0" y="573.0" font-size="13" font-weight="600" fill="#1a1a1a">Sar</text><text class="s" x="199.0" y="615.0" font-size="16" font-weight="700" fill="#1a1a1a">1,7%</text></g>
+<g><title>Campania: 14,3% (quota reale 12,2%)</title><rect x="421.0" y="553.0" width="72" height="72" rx="2" fill="#13306e"/><text class="s" x="430.0" y="573.0" font-size="13" font-weight="600" fill="#ffffff">Cam</text><text class="s" x="430.0" y="615.0" font-size="16" font-weight="700" fill="#ffffff">14,3%</text></g>
+<g><title>Basilicata: 5,4% (quota reale 12,5%)</title><rect x="498.0" y="553.0" width="72" height="72" rx="2" fill="#5ea4f3"/><text class="s" x="507.0" y="573.0" font-size="13" font-weight="600" fill="#1a1a1a">Bas</text><text class="s" x="507.0" y="615.0" font-size="16" font-weight="700" fill="#1a1a1a">5,4%</text></g>
+<g><title>Calabria: 13,0% (quota reale 25,0%)</title><rect x="498.0" y="630.0" width="72" height="72" rx="2" fill="#133f9c"/><text class="s" x="507.0" y="650.0" font-size="13" font-weight="600" fill="#ffffff">Cal</text><text class="s" x="507.0" y="692.0" font-size="16" font-weight="700" fill="#ffffff">13,0%</text></g>
+<g><title>Sicilia: 9,5% (quota reale 6,3%)</title><rect x="421.0" y="707.0" width="72" height="72" rx="2" fill="#286ee2"/><text class="s" x="430.0" y="727.0" font-size="13" font-weight="600" fill="#ffffff">Sic</text><text class="s" x="430.0" y="769.0" font-size="16" font-weight="700" fill="#ffffff">9,5%</text></g>
+<text class="s" x="16" y="644" font-size="12" fill="#6b6b6b">Quota pesata: media delle quote di ciascuna</text>
+<text class="s" x="16" y="660" font-size="12" fill="#6b6b6b">regione in quattro fasce di comuni (sotto</text>
+<text class="s" x="16" y="676" font-size="12" fill="#6b6b6b">2mila, 2-5mila, 5-10mila e oltre 10mila</text>
+<text class="s" x="16" y="692" font-size="12" fill="#6b6b6b">abitanti), con i pesi delle unità locali</text>
+<text class="s" x="16" y="708" font-size="12" fill="#6b6b6b">italiane. Sportelli a fine 2025. Valle</text>
+<text class="s" x="16" y="724" font-size="12" fill="#6b6b6b">d'Aosta: per la fascia 5-10mila, assente, si</text>
+<text class="s" x="16" y="740" font-size="12" fill="#6b6b6b">usa la media italiana.</text>
+<line x1="16" x2="744" y1="798" y2="798" stroke="#e3e3e3"/>
+<text class="s" x="16" y="816" font-size="12" fill="#6b6b6b">Fonte: Banca d'Italia (TDB10195); Istat, registro ASIA, unità locali 2024</text>
+<text class="s" x="744" y="816" text-anchor="end" font-size="12" fill="#6b6b6b">Elaborazione Radar – QN</text>
+<svg x="697.1" y="26" width="46.9" height="24" viewBox="0 0 795 407">
+<path d="M198.191 0.0308838C291.679 1.40807 396.303 79.4122 396.303 201.18C396.303 295.975 334.916 348.183 334.805 348.277C334.805 348.277 337.618 358.821 353.045 371.041H353.03C368.736 383.486 386.574 386.299 402.639 386.161V398.563C402.544 398.566 364.081 399.914 337.259 396.646C306.99 392.959 273.52 386.204 250.854 366.304C207.268 328.035 211.56 270.951 169.453 270.856C157.095 270.827 147.967 277.334 142.305 284.343C140.298 286.835 138.942 289.758 138.942 291.849C138.942 296.383 137.39 340.94 142.723 355.353C152.246 381.097 175.204 391.794 193.459 393.404C225.633 396.238 246.122 384.805 246.122 384.805C249.983 387.829 255.316 390.599 257.228 391.459C251.557 396.727 227.764 406.797 198.185 405.996C89.4376 403.052 0.000195909 314.205 0 201.188V201.108C3.56752 78.4071 103.048 -1.37545 198.191 0.0308838ZM581.85 3.43518L742.506 240.334V15.8365H704.479V3.43518H795V15.8365H757.083V397.624H675.763L469.521 93.36V386.17H507.547V398.571H416.968V386.17H454.943V15.8365H416.968V3.43518H581.85ZM198.191 11.2672C163.307 11.2672 138.957 40.1076 138.957 70.1871L139.045 256.662C139.045 256.662 158.817 226.837 198.191 225.154C235.127 223.573 257.426 247.284 257.426 247.284V70.9596C257.426 36.8797 230.446 11.2672 198.191 11.2672Z" fill="#0E0F11"/>
+</svg>
+</svg>
+</main>
+</body>
+</html>

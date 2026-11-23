@@ -21,6 +21,16 @@
   .scala svg { display: block; overflow: visible; }
   .tile { transition: opacity 180ms ease; }
   .tile.is-on rect { stroke: var(--ink); stroke-width: 1.5px; }
+  /* prime e ultime 3 della vista: contorno pieno o tratteggiato */
+  .tile.top3 rect { stroke: var(--ink); stroke-width: 2.25px; }
+  .tile.bot3 rect { stroke: var(--ink); stroke-width: 2.25px; stroke-dasharray: 4 2.5; }
+  .estremi { display: flex; flex-wrap: wrap; gap: 6px 36px; margin: 6px 0 0; font-size: 13px; color: var(--ink); }
+  .estremi h3 { display: flex; align-items: center; gap: 7px; margin: 0 0 4px; font: 600 13px var(--sans); }
+  .estremi ol { margin: 0; padding: 0 0 0 18px; font-variant-numeric: tabular-nums; }
+  .estremi li { margin: 1px 0; }
+  .estremi li b { font-weight: 600; }
+  .estremi .anello { width: 12px; height: 12px; border-radius: 2px; border: 2px solid var(--ink); box-sizing: border-box; }
+  .estremi .anello.trat { border-style: dashed; }
 </style>
 </head>
 <body>
@@ -36,6 +46,7 @@
   </div>
 
   <div class="scala" id="scala"></div>
+  <div class="estremi" id="estremi" aria-live="polite"></div>
   <figure class="r-chart" id="mappa" style="margin-top:8px"></figure>
 
   <footer class="r-foot">
@@ -108,6 +119,18 @@
       });
     }
 
+    // prime e ultime 3 province della vista corrente: elenco sopra la mappa e contorno sui quadrati
+    function estremi(cfg) {
+      var ord = prov.slice().sort(function (a, b) { return cfg.val(b) - cfg.val(a); });
+      var top = ord.slice(0, 3), bot = ord.slice(-3).reverse();
+      var riga = function (d) { return "<li>" + d.nome + " <b>" + cfg.full(cfg.val(d)) + "</b></li>"; };
+      var lab = vista === "pc" ? ["Le 3 con più depositi", "Le 3 con meno depositi"] : ["Le 3 con la crescita più alta", "Le 3 con la crescita più bassa"];
+      d3.select("#estremi").html(
+        '<div><h3><i class="anello"></i>' + lab[0] + "</h3><ol>" + top.map(riga).join("") + "</ol></div>" +
+        '<div><h3><i class="anello trat"></i>' + lab[1] + "</h3><ol>" + bot.map(riga).join("") + "</ol></div>");
+      if (tiles) tiles.classed("top3", function (d) { return top.indexOf(d) >= 0; }).classed("bot3", function (d) { return bot.indexOf(d) >= 0; });
+    }
+
     function legenda(W, cfg, col) {
       var lw = Math.min(320, W - 20), lh = 10;
       var x = d3.scaleLinear().domain([cfg.dom[0], cfg.dom[cfg.dom.length - 1]]).range([0, lw]);
@@ -161,6 +184,7 @@
       }).on("pointerleave", function (ev) {
         if (ev.pointerType === "mouse") { tip.hide(); tiles.classed("is-dimmed is-on", false); }
       });
+      estremi(cfg);
     });
 
     // cambio vista: ridisegna con un passaggio di colore
@@ -178,6 +202,7 @@
         tx.style("fill", ink);
         if (tx.size() === 2) d3.select(tx.nodes()[1]).text(cfg.lab(cfg.val(d)));
       });
+      estremi(cfg);
     });
   }).catch(function (e) { R.fail("#mappa", e); });
 })();
