@@ -10,72 +10,26 @@
 <link rel="stylesheet" href="../assets/radar.css">
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script src="../assets/radar.js"></script>
-<style>
-  /* grafico statico disegnato per il tema chiaro: resta sul suo fondo grigio */
-  .radar { padding: 0; }
-  .radar svg.static { display: block; width: 100%; height: auto; }
-</style>
+<script src="../assets/classifica-depositi.js"></script>
 </head>
 <body>
 <main class="radar">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 630" class="static" role="img" aria-labelledby="t d">
-<title id="t">A Bolzano oltre 30mila euro in banca per ogni abitante</title><desc id="d">Le 10 province con i depositi delle famiglie per abitante più alti: Bolzano/Bozen 30.600 euro; Milano 27.600 euro; Piacenza 26.800 euro; Sondrio 26.100 euro; Belluno 25.600 euro; Trento 25.200 euro; Isernia 24.900 euro; Lecco 24.700 euro; Cuneo 24.100 euro; Monza e della Brianza 23.900 euro. Media italiana 19.700 euro.</desc>
-<style>@import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,700&amp;display=swap");.t{font-family:Newsreader,Georgia,serif;font-weight:700;font-size:31px;fill:#0c0c0c}.s{font-family:'Libre Franklin','Helvetica Neue',Arial,sans-serif}text{font-variant-numeric:tabular-nums}</style>
-<rect width="760" height="630" fill="#f7f8f9"/>
-<text class="t" x="16" y="48">A Bolzano oltre 30mila euro in banca</text>
-<text class="t" x="16" y="82">per ogni abitante</text>
-<text class="s" x="16" y="112" font-size="14" fill="#6b6b6b">Depositi bancari delle famiglie per abitante a fine 2025, in euro. Le 10 province con il valore più alto</text>
-<svg x="697.1" y="26" width="46.9" height="24" viewBox="0 0 795 407">
-<path d="M198.191 0.0308838C291.679 1.40807 396.303 79.4122 396.303 201.18C396.303 295.975 334.916 348.183 334.805 348.277C334.805 348.277 337.618 358.821 353.045 371.041H353.03C368.736 383.486 386.574 386.299 402.639 386.161V398.563C402.544 398.566 364.081 399.914 337.259 396.646C306.99 392.959 273.52 386.204 250.854 366.304C207.268 328.035 211.56 270.951 169.453 270.856C157.095 270.827 147.967 277.334 142.305 284.343C140.298 286.835 138.942 289.758 138.942 291.849C138.942 296.383 137.39 340.94 142.723 355.353C152.246 381.097 175.204 391.794 193.459 393.404C225.633 396.238 246.122 384.805 246.122 384.805C249.983 387.829 255.316 390.599 257.228 391.459C251.557 396.727 227.764 406.797 198.185 405.996C89.4376 403.052 0.000195909 314.205 0 201.188V201.108C3.56752 78.4071 103.048 -1.37545 198.191 0.0308838ZM581.85 3.43518L742.506 240.334V15.8365H704.479V3.43518H795V15.8365H757.083V397.624H675.763L469.521 93.36V386.17H507.547V398.571H416.968V386.17H454.943V15.8365H416.968V3.43518H581.85ZM198.191 11.2672C163.307 11.2672 138.957 40.1076 138.957 70.1871L139.045 256.662C139.045 256.662 158.817 226.837 198.191 225.154C235.127 223.573 257.426 247.284 257.426 247.284V70.9596C257.426 36.8797 230.446 11.2672 198.191 11.2672Z" fill="#0E0F11"/>
-</svg>
-<g class="s">
-<line x1="186.0" x2="186.0" y1="158" y2="526" stroke="#c9c9c9"/>
-<text x="186.0" y="152" text-anchor="middle" font-size="12" fill="#6b6b6b">0</text>
-<line x1="332.2" x2="332.2" y1="158" y2="526" stroke="#e3e3e3"/>
-<text x="332.2" y="152" text-anchor="middle" font-size="12" fill="#6b6b6b">10.000</text>
-<line x1="478.5" x2="478.5" y1="158" y2="526" stroke="#e3e3e3"/>
-<text x="478.5" y="152" text-anchor="middle" font-size="12" fill="#6b6b6b">20.000</text>
-<line x1="624.8" x2="624.8" y1="158" y2="526" stroke="#e3e3e3"/>
-<text x="624.8" y="152" text-anchor="middle" font-size="12" fill="#6b6b6b">30.000</text>
-<line x1="474.1" x2="474.1" y1="162" y2="532" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="3 3"/>
-<text x="16" y="189.0" font-size="13" fill="#1a1a1a" font-weight="600">Bolzano/Bozen</text>
-<g fill="#d1452f"><path d="M186.0,174.0H631.5Q633.5,174.0 633.5,176.0V192.0Q633.5,194.0 631.5,194.0H186.0Z"/></g>
-<text x="641.5" y="189.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">30.600</text>
-<text x="16" y="225.0" font-size="13" fill="#1a1a1a" font-weight="400">Milano</text>
-<g fill="#1f4fd1"><path d="M186.0,210.0H587.7Q589.7,210.0 589.7,212.0V228.0Q589.7,230.0 587.7,230.0H186.0Z"/></g>
-<text x="597.7" y="225.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">27.600</text>
-<text x="16" y="261.0" font-size="13" fill="#1a1a1a" font-weight="400">Piacenza</text>
-<g fill="#1f4fd1"><path d="M186.0,246.0H575.6Q577.6,246.0 577.6,248.0V264.0Q577.6,266.0 575.6,266.0H186.0Z"/></g>
-<text x="585.6" y="261.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">26.800</text>
-<text x="16" y="297.0" font-size="13" fill="#1a1a1a" font-weight="400">Sondrio</text>
-<g fill="#1f4fd1"><path d="M186.0,282.0H566.0Q568.0,282.0 568.0,284.0V300.0Q568.0,302.0 566.0,302.0H186.0Z"/></g>
-<text x="576.0" y="297.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">26.100</text>
-<text x="16" y="333.0" font-size="13" fill="#1a1a1a" font-weight="400">Belluno</text>
-<g fill="#1f4fd1"><path d="M186.0,318.0H558.8Q560.8,318.0 560.8,320.0V336.0Q560.8,338.0 558.8,338.0H186.0Z"/></g>
-<text x="568.8" y="333.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">25.600</text>
-<text x="16" y="369.0" font-size="13" fill="#1a1a1a" font-weight="400">Trento</text>
-<g fill="#1f4fd1"><path d="M186.0,354.0H552.0Q554.0,354.0 554.0,356.0V372.0Q554.0,374.0 552.0,374.0H186.0Z"/></g>
-<text x="562.0" y="369.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">25.200</text>
-<text x="16" y="405.0" font-size="13" fill="#1a1a1a" font-weight="400">Isernia</text>
-<g fill="#1f4fd1"><path d="M186.0,390.0H548.1Q550.1,390.0 550.1,392.0V408.0Q550.1,410.0 548.1,410.0H186.0Z"/></g>
-<text x="558.1" y="405.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">24.900</text>
-<text x="16" y="441.0" font-size="13" fill="#1a1a1a" font-weight="400">Lecco</text>
-<g fill="#1f4fd1"><path d="M186.0,426.0H546.0Q548.0,426.0 548.0,428.0V444.0Q548.0,446.0 546.0,446.0H186.0Z"/></g>
-<text x="556.0" y="441.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">24.700</text>
-<text x="16" y="477.0" font-size="13" fill="#1a1a1a" font-weight="400">Cuneo</text>
-<g fill="#1f4fd1"><path d="M186.0,462.0H536.8Q538.8,462.0 538.8,464.0V480.0Q538.8,482.0 536.8,482.0H186.0Z"/></g>
-<text x="546.8" y="477.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">24.100</text>
-<text x="16" y="513.0" font-size="13" fill="#1a1a1a" font-weight="400">Monza e della Brianza</text>
-<g fill="#1f4fd1"><path d="M186.0,498.0H533.4Q535.4,498.0 535.4,500.0V516.0Q535.4,518.0 533.4,518.0H186.0Z"/></g>
-<text x="543.4" y="513.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">23.900</text>
-<text x="474.1" y="548" text-anchor="middle" font-size="12" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4">Italia 19.700</text>
-</g>
-<text class="s" x="16" y="566" font-size="12" fill="#6b6b6b">Depositi presso banche e Cassa depositi e prestiti delle famiglie consumatrici residenti nella provincia, divisi per i</text>
-<text class="s" x="16" y="582" font-size="12" fill="#6b6b6b">residenti. Valori arrotondati alle centinaia di euro.</text>
-<line x1="16" x2="744" y1="600" y2="600" stroke="#e3e3e3"/>
-<text class="s" x="16" y="618" font-size="12" fill="#6b6b6b">Fonte: Banca d'Italia (TDB20290, depositi al 31/12/2025); Istat, popolazione al 1° gennaio 2026 (stima)</text>
-<text class="s" x="744" y="618" text-anchor="end" font-size="12" fill="#6b6b6b">Elaborazione Radar – QN</text>
-</svg>
+  <header>
+    <h1 class="r-title" id="titolo">&nbsp;</h1>
+    <p class="r-sub">Depositi bancari delle famiglie per abitante a fine 2025, in euro. Le 10 province con il valore più alto</p>
+  </header>
+  <figure class="r-chart" id="barre"></figure>
+  <p class="r-note">Depositi presso banche e Cassa depositi e prestiti delle famiglie consumatrici residenti nella provincia, divisi per i residenti. Valori arrotondati alle centinaia di euro.</p>
+  <footer class="r-foot">
+    <span>Fonte: Banca d'Italia (TDB20290, depositi al 31/12/2025); Istat, popolazione al 1° gennaio 2026 (stima)</span>
+    <span>Elaborazione Radar – QN</span>
+  </footer>
 </main>
+<script>
+RadarClassifica({ host: "#barre", verso: "top", n: 10, onData: function (sel, it) {
+  var d = sel[0], k = Math.floor(d.pc / 1000);
+  document.getElementById("titolo").textContent = "A " + d.nome + " oltre " + k + "mila euro in banca per ogni abitante";
+} });
+</script>
 </body>
 </html>

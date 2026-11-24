@@ -10,72 +10,26 @@
 <link rel="stylesheet" href="../assets/radar.css">
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script src="../assets/radar.js"></script>
-<style>
-  /* grafico statico disegnato per il tema chiaro: resta sul suo fondo grigio */
-  .radar { padding: 0; }
-  .radar svg.static { display: block; width: 100%; height: auto; }
-</style>
+<script src="../assets/classifica-depositi.js"></script>
 </head>
 <body>
 <main class="radar">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 630" class="static" role="img" aria-labelledby="t d">
-<title id="t">A Crotone meno di 10mila euro in banca per abitante, meno della metà della media</title><desc id="d">Le 10 province con i depositi delle famiglie per abitante più bassi: Crotone 9.600 euro; Siracusa 10.900 euro; Trapani 11.000 euro; Ragusa 11.900 euro; Catania 11.900 euro; Palermo 11.900 euro; Agrigento 13.100 euro; Sud Sardegna 13.200 euro; Caltanissetta 13.300 euro; Enna 13.300 euro. Media italiana 19.700 euro.</desc>
-<style>@import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,700&amp;display=swap");.t{font-family:Newsreader,Georgia,serif;font-weight:700;font-size:31px;fill:#0c0c0c}.s{font-family:'Libre Franklin','Helvetica Neue',Arial,sans-serif}text{font-variant-numeric:tabular-nums}</style>
-<rect width="760" height="630" fill="#f7f8f9"/>
-<text class="t" x="16" y="48">A Crotone meno di 10mila euro in banca</text>
-<text class="t" x="16" y="82">per abitante, meno della metà della media</text>
-<text class="s" x="16" y="112" font-size="14" fill="#6b6b6b">Depositi bancari delle famiglie per abitante a fine 2025, in euro. Le 10 province con il valore più basso</text>
-<svg x="697.1" y="26" width="46.9" height="24" viewBox="0 0 795 407">
-<path d="M198.191 0.0308838C291.679 1.40807 396.303 79.4122 396.303 201.18C396.303 295.975 334.916 348.183 334.805 348.277C334.805 348.277 337.618 358.821 353.045 371.041H353.03C368.736 383.486 386.574 386.299 402.639 386.161V398.563C402.544 398.566 364.081 399.914 337.259 396.646C306.99 392.959 273.52 386.204 250.854 366.304C207.268 328.035 211.56 270.951 169.453 270.856C157.095 270.827 147.967 277.334 142.305 284.343C140.298 286.835 138.942 289.758 138.942 291.849C138.942 296.383 137.39 340.94 142.723 355.353C152.246 381.097 175.204 391.794 193.459 393.404C225.633 396.238 246.122 384.805 246.122 384.805C249.983 387.829 255.316 390.599 257.228 391.459C251.557 396.727 227.764 406.797 198.185 405.996C89.4376 403.052 0.000195909 314.205 0 201.188V201.108C3.56752 78.4071 103.048 -1.37545 198.191 0.0308838ZM581.85 3.43518L742.506 240.334V15.8365H704.479V3.43518H795V15.8365H757.083V397.624H675.763L469.521 93.36V386.17H507.547V398.571H416.968V386.17H454.943V15.8365H416.968V3.43518H581.85ZM198.191 11.2672C163.307 11.2672 138.957 40.1076 138.957 70.1871L139.045 256.662C139.045 256.662 158.817 226.837 198.191 225.154C235.127 223.573 257.426 247.284 257.426 247.284V70.9596C257.426 36.8797 230.446 11.2672 198.191 11.2672Z" fill="#0E0F11"/>
-</svg>
-<g class="s">
-<line x1="186.0" x2="186.0" y1="158" y2="526" stroke="#c9c9c9"/>
-<text x="186.0" y="152" text-anchor="middle" font-size="12" fill="#6b6b6b">0</text>
-<line x1="332.2" x2="332.2" y1="158" y2="526" stroke="#e3e3e3"/>
-<text x="332.2" y="152" text-anchor="middle" font-size="12" fill="#6b6b6b">10.000</text>
-<line x1="478.5" x2="478.5" y1="158" y2="526" stroke="#e3e3e3"/>
-<text x="478.5" y="152" text-anchor="middle" font-size="12" fill="#6b6b6b">20.000</text>
-<line x1="624.8" x2="624.8" y1="158" y2="526" stroke="#e3e3e3"/>
-<text x="624.8" y="152" text-anchor="middle" font-size="12" fill="#6b6b6b">30.000</text>
-<line x1="474.1" x2="474.1" y1="162" y2="532" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="3 3"/>
-<text x="16" y="189.0" font-size="13" fill="#1a1a1a" font-weight="600">Crotone</text>
-<g fill="#d1452f"><path d="M186.0,174.0H324.0Q326.0,174.0 326.0,176.0V192.0Q326.0,194.0 324.0,194.0H186.0Z"/></g>
-<text x="334.0" y="189.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">9.600</text>
-<text x="16" y="225.0" font-size="13" fill="#1a1a1a" font-weight="400">Siracusa</text>
-<g fill="#1f4fd1"><path d="M186.0,210.0H344.0Q346.0,210.0 346.0,212.0V228.0Q346.0,230.0 344.0,230.0H186.0Z"/></g>
-<text x="354.0" y="225.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">10.900</text>
-<text x="16" y="261.0" font-size="13" fill="#1a1a1a" font-weight="400">Trapani</text>
-<g fill="#1f4fd1"><path d="M186.0,246.0H344.9Q346.9,246.0 346.9,248.0V264.0Q346.9,266.0 344.9,266.0H186.0Z"/></g>
-<text x="354.9" y="261.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">11.000</text>
-<text x="16" y="297.0" font-size="13" fill="#1a1a1a" font-weight="400">Ragusa</text>
-<g fill="#1f4fd1"><path d="M186.0,282.0H357.4Q359.4,282.0 359.4,284.0V300.0Q359.4,302.0 357.4,302.0H186.0Z"/></g>
-<text x="367.4" y="297.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">11.900</text>
-<text x="16" y="333.0" font-size="13" fill="#1a1a1a" font-weight="400">Catania</text>
-<g fill="#1f4fd1"><path d="M186.0,318.0H357.9Q359.9,318.0 359.9,320.0V336.0Q359.9,338.0 357.9,338.0H186.0Z"/></g>
-<text x="367.9" y="333.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">11.900</text>
-<text x="16" y="369.0" font-size="13" fill="#1a1a1a" font-weight="400">Palermo</text>
-<g fill="#1f4fd1"><path d="M186.0,354.0H358.3Q360.3,354.0 360.3,356.0V372.0Q360.3,374.0 358.3,374.0H186.0Z"/></g>
-<text x="368.3" y="369.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">11.900</text>
-<text x="16" y="405.0" font-size="13" fill="#1a1a1a" font-weight="400">Agrigento</text>
-<g fill="#1f4fd1"><path d="M186.0,390.0H375.8Q377.8,390.0 377.8,392.0V408.0Q377.8,410.0 375.8,410.0H186.0Z"/></g>
-<text x="385.8" y="405.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">13.100</text>
-<text x="16" y="441.0" font-size="13" fill="#1a1a1a" font-weight="400">Sud Sardegna</text>
-<g fill="#1f4fd1"><path d="M186.0,426.0H377.3Q379.3,426.0 379.3,428.0V444.0Q379.3,446.0 377.3,446.0H186.0Z"/></g>
-<text x="387.3" y="441.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">13.200</text>
-<text x="16" y="477.0" font-size="13" fill="#1a1a1a" font-weight="400">Caltanissetta</text>
-<g fill="#1f4fd1"><path d="M186.0,462.0H378.2Q380.2,462.0 380.2,464.0V480.0Q380.2,482.0 378.2,482.0H186.0Z"/></g>
-<text x="388.2" y="477.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">13.300</text>
-<text x="16" y="513.0" font-size="13" fill="#1a1a1a" font-weight="400">Enna</text>
-<g fill="#1f4fd1"><path d="M186.0,498.0H378.7Q380.7,498.0 380.7,500.0V516.0Q380.7,518.0 378.7,518.0H186.0Z"/></g>
-<text x="388.7" y="513.0" font-size="13" font-weight="700" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4" stroke-linejoin="round">13.300</text>
-<text x="474.1" y="548" text-anchor="middle" font-size="12" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4">Italia 19.700</text>
-</g>
-<text class="s" x="16" y="566" font-size="12" fill="#6b6b6b">Depositi presso banche e Cassa depositi e prestiti delle famiglie consumatrici residenti nella provincia, divisi per i</text>
-<text class="s" x="16" y="582" font-size="12" fill="#6b6b6b">residenti. Valori arrotondati alle centinaia di euro.</text>
-<line x1="16" x2="744" y1="600" y2="600" stroke="#e3e3e3"/>
-<text class="s" x="16" y="618" font-size="12" fill="#6b6b6b">Fonte: Banca d'Italia (TDB20290, depositi al 31/12/2025); Istat, popolazione al 1° gennaio 2026 (stima)</text>
-<text class="s" x="744" y="618" text-anchor="end" font-size="12" fill="#6b6b6b">Elaborazione Radar – QN</text>
-</svg>
+  <header>
+    <h1 class="r-title" id="titolo">&nbsp;</h1>
+    <p class="r-sub">Depositi bancari delle famiglie per abitante a fine 2025, in euro. Le 10 province con il valore più basso</p>
+  </header>
+  <figure class="r-chart" id="barre"></figure>
+  <p class="r-note">Depositi presso banche e Cassa depositi e prestiti delle famiglie consumatrici residenti nella provincia, divisi per i residenti. Valori arrotondati alle centinaia di euro.</p>
+  <footer class="r-foot">
+    <span>Fonte: Banca d'Italia (TDB20290, depositi al 31/12/2025); Istat, popolazione al 1° gennaio 2026 (stima)</span>
+    <span>Elaborazione Radar – QN</span>
+  </footer>
 </main>
+<script>
+RadarClassifica({ host: "#barre", verso: "bottom", n: 10, onData: function (sel, it) {
+  var d = sel[0], k = Math.floor(d.pc / 1000);
+  document.getElementById("titolo").textContent = "A " + d.nome + " meno di " + (k + 1) + "mila euro in banca per abitante, " + (d.pc < it.pc / 2 ? "meno della metà" : "circa la metà") + " della media";
+} });
+</script>
 </body>
 </html>

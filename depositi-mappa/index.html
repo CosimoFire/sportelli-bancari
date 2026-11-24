@@ -239,6 +239,14 @@
       paths.transition().duration(R.reduced ? 0 : 450).style("fill", function (f) { return col(cfg.val(f.d)); });
       estremi(cfg);
     });
+
+    // le scale si calcolano dalle variabili del tema: se cambiano sfondo o tema, si ricolora
+    new MutationObserver(function () {
+      if (!paths) return;
+      var cfg = VISTE[vista], col = scala(cfg), W = Math.floor(host.getBoundingClientRect().width);
+      legenda(W, cfg, col);
+      paths.interrupt().style("fill", function (f) { return col(cfg.val(f.d)); });
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "data-bg"] });
   }).catch(function (e) { R.fail("#mappa", e); });
 })();
 </script>

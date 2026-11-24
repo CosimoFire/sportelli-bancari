@@ -10,94 +10,121 @@
 <link rel="stylesheet" href="../assets/radar.css">
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script src="../assets/radar.js"></script>
-<style>
-  /* grafico statico disegnato per il tema chiaro: resta sul suo fondo grigio */
-  .radar { padding: 0; }
-  .radar svg.static { display: block; width: 100%; height: auto; }
-</style>
 </head>
 <body>
 <main class="radar">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 792" class="static" role="img" aria-labelledby="t d">
-<title id="t">Nei paesi sotto i 2mila abitanti ha chiuso uno sportello su due</title><desc id="d">Dot plot: calo degli sportelli per classe di comune, con l'area del cerchio proporzionale agli sportelli chiusi. Meno di 2mila −51,6%, 943 in meno; 2-5mila −39,0%, 1.369 in meno; 5-10mila −34,1%, 1.434 in meno; 10-20mila −33,3%, 1.494 in meno; 20-50mila −31,8%, 1.670 in meno; 50-100mila −34,5%, 1.084 in meno; Oltre 100mila −39,9%, 3.126 in meno. Italia −36,8%.</desc>
-<style>@import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,700&amp;display=swap");.t{font-family:Newsreader,Georgia,serif;font-weight:700;font-size:31px;fill:#0c0c0c}.s{font-family:'Libre Franklin','Helvetica Neue',Arial,sans-serif}text{font-variant-numeric:tabular-nums}</style>
-<rect width="760" height="792" fill="#f7f8f9"/>
-<text class="t" x="16" y="48">Nei paesi sotto i 2mila abitanti</text>
-<text class="t" x="16" y="82">ha chiuso uno sportello su due</text>
-<text class="s" x="16" y="112" font-size="14" fill="#6b6b6b">Variazione del numero di sportelli bancari tra fine 2015 e fine 2025, per classe di popolazione del comune</text>
-<svg x="697.1" y="26" width="46.9" height="24" viewBox="0 0 795 407">
-<path d="M198.191 0.0308838C291.679 1.40807 396.303 79.4122 396.303 201.18C396.303 295.975 334.916 348.183 334.805 348.277C334.805 348.277 337.618 358.821 353.045 371.041H353.03C368.736 383.486 386.574 386.299 402.639 386.161V398.563C402.544 398.566 364.081 399.914 337.259 396.646C306.99 392.959 273.52 386.204 250.854 366.304C207.268 328.035 211.56 270.951 169.453 270.856C157.095 270.827 147.967 277.334 142.305 284.343C140.298 286.835 138.942 289.758 138.942 291.849C138.942 296.383 137.39 340.94 142.723 355.353C152.246 381.097 175.204 391.794 193.459 393.404C225.633 396.238 246.122 384.805 246.122 384.805C249.983 387.829 255.316 390.599 257.228 391.459C251.557 396.727 227.764 406.797 198.185 405.996C89.4376 403.052 0.000195909 314.205 0 201.188V201.108C3.56752 78.4071 103.048 -1.37545 198.191 0.0308838ZM581.85 3.43518L742.506 240.334V15.8365H704.479V3.43518H795V15.8365H757.083V397.624H675.763L469.521 93.36V386.17H507.547V398.571H416.968V386.17H454.943V15.8365H416.968V3.43518H581.85ZM198.191 11.2672C163.307 11.2672 138.957 40.1076 138.957 70.1871L139.045 256.662C139.045 256.662 158.817 226.837 198.191 225.154C235.127 223.573 257.426 247.284 257.426 247.284V70.9596C257.426 36.8797 230.446 11.2672 198.191 11.2672Z" fill="#0E0F11"/>
-</svg>
-<g class="s">
-<line x1="554.0" x2="554.0" y1="240" y2="680" stroke="#c9c9c9"/>
-<text x="554.0" y="232" text-anchor="middle" font-size="12" fill="#6b6b6b">0%</text>
-<line x1="426.0" x2="426.0" y1="240" y2="680" stroke="#e3e3e3"/>
-<text x="426.0" y="232" text-anchor="middle" font-size="12" fill="#6b6b6b">−20%</text>
-<line x1="298.0" x2="298.0" y1="240" y2="680" stroke="#e3e3e3"/>
-<text x="298.0" y="232" text-anchor="middle" font-size="12" fill="#6b6b6b">−40%</text>
-<line x1="170.0" x2="170.0" y1="240" y2="680" stroke="#e3e3e3"/>
-<text x="170.0" y="232" text-anchor="middle" font-size="12" fill="#6b6b6b">−60%</text>
-<defs><marker id="punta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10Z" fill="#1a1a1a"/></marker></defs>
-<line x1="554.0" x2="172.0" y1="206" y2="206" stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#punta)"/>
-<text x="362.0" y="199" text-anchor="middle" font-size="12" font-weight="600" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4">Calo più forte</text>
-<line x1="318.8" x2="318.8" y1="242" y2="686" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="3 3"/>
-<text x="318.8" y="702" text-anchor="middle" font-size="12" fill="#1a1a1a" paint-order="stroke" stroke="#f7f8f9" stroke-width="4">Italia −36,8%</text>
-<line x1="170" x2="564" y1="277.0" y2="277.0" stroke="#e3e3e3" stroke-width="0.75"/>
-<text x="16" y="282.0" font-size="13" fill="#1a1a1a" font-weight="600">Meno di 2mila</text>
-<circle cx="223.5" cy="277.0" r="14.8" fill="#1f4fd1" fill-opacity="0.9" stroke="#f7f8f9" stroke-width="1"><title>Meno di 2mila: −51,6%, 943 sportelli in meno (da 1.826 a 883)</title></circle>
-<circle cx="223.5" cy="277.0" r="1.75" fill="#f7f8f9"/>
-<text x="576" y="275.0" font-size="13" font-weight="700" fill="#1a1a1a">−51,6%</text>
-<text x="576" y="291.0" font-size="12" fill="#6b6b6b">943 sportelli in meno</text>
-<line x1="170" x2="564" y1="339.0" y2="339.0" stroke="#e3e3e3" stroke-width="0.75"/>
-<text x="16" y="344.0" font-size="13" fill="#1a1a1a" font-weight="400">2-5mila</text>
-<circle cx="304.2" cy="339.0" r="17.9" fill="#8a8a8a" fill-opacity="0.55" stroke="#f7f8f9" stroke-width="1"><title>2-5mila: −39,0%, 1.369 sportelli in meno (da 3.507 a 2.138)</title></circle>
-<circle cx="304.2" cy="339.0" r="1.75" fill="#f7f8f9"/>
-<text x="576" y="337.0" font-size="13" font-weight="700" fill="#1a1a1a">−39,0%</text>
-<text x="576" y="353.0" font-size="12" fill="#6b6b6b">1.369 sportelli in meno</text>
-<line x1="170" x2="564" y1="401.0" y2="401.0" stroke="#e3e3e3" stroke-width="0.75"/>
-<text x="16" y="406.0" font-size="13" fill="#1a1a1a" font-weight="400">5-10mila</text>
-<circle cx="335.7" cy="401.0" r="18.3" fill="#8a8a8a" fill-opacity="0.55" stroke="#f7f8f9" stroke-width="1"><title>5-10mila: −34,1%, 1.434 sportelli in meno (da 4.205 a 2.771)</title></circle>
-<circle cx="335.7" cy="401.0" r="1.75" fill="#f7f8f9"/>
-<text x="576" y="399.0" font-size="13" font-weight="700" fill="#1a1a1a">−34,1%</text>
-<text x="576" y="415.0" font-size="12" fill="#6b6b6b">1.434 sportelli in meno</text>
-<line x1="170" x2="564" y1="463.0" y2="463.0" stroke="#e3e3e3" stroke-width="0.75"/>
-<text x="16" y="468.0" font-size="13" fill="#1a1a1a" font-weight="400">10-20mila</text>
-<circle cx="341.1" cy="463.0" r="18.7" fill="#8a8a8a" fill-opacity="0.55" stroke="#f7f8f9" stroke-width="1"><title>10-20mila: −33,3%, 1.494 sportelli in meno (da 4.491 a 2.997)</title></circle>
-<circle cx="341.1" cy="463.0" r="1.75" fill="#f7f8f9"/>
-<text x="576" y="461.0" font-size="13" font-weight="700" fill="#1a1a1a">−33,3%</text>
-<text x="576" y="477.0" font-size="12" fill="#6b6b6b">1.494 sportelli in meno</text>
-<line x1="170" x2="564" y1="525.0" y2="525.0" stroke="#e3e3e3" stroke-width="0.75"/>
-<text x="16" y="530.0" font-size="13" fill="#1a1a1a" font-weight="400">20-50mila</text>
-<circle cx="350.7" cy="525.0" r="19.7" fill="#8a8a8a" fill-opacity="0.55" stroke="#f7f8f9" stroke-width="1"><title>20-50mila: −31,8%, 1.670 sportelli in meno (da 5.258 a 3.588)</title></circle>
-<circle cx="350.7" cy="525.0" r="1.75" fill="#f7f8f9"/>
-<text x="576" y="523.0" font-size="13" font-weight="700" fill="#1a1a1a">−31,8%</text>
-<text x="576" y="539.0" font-size="12" fill="#6b6b6b">1.670 sportelli in meno</text>
-<line x1="170" x2="564" y1="587.0" y2="587.0" stroke="#e3e3e3" stroke-width="0.75"/>
-<text x="16" y="592.0" font-size="13" fill="#1a1a1a" font-weight="400">50-100mila</text>
-<circle cx="333.5" cy="587.0" r="15.9" fill="#8a8a8a" fill-opacity="0.55" stroke="#f7f8f9" stroke-width="1"><title>50-100mila: −34,5%, 1.084 sportelli in meno (da 3.146 a 2.062)</title></circle>
-<circle cx="333.5" cy="587.0" r="1.75" fill="#f7f8f9"/>
-<text x="576" y="585.0" font-size="13" font-weight="700" fill="#1a1a1a">−34,5%</text>
-<text x="576" y="601.0" font-size="12" fill="#6b6b6b">1.084 sportelli in meno</text>
-<line x1="170" x2="564" y1="649.0" y2="649.0" stroke="#e3e3e3" stroke-width="0.75"/>
-<text x="16" y="654.0" font-size="13" fill="#1a1a1a" font-weight="400">Oltre 100mila</text>
-<circle cx="298.3" cy="649.0" r="27.0" fill="#8a8a8a" fill-opacity="0.55" stroke="#f7f8f9" stroke-width="1"><title>Oltre 100mila: −39,9%, 3.126 sportelli in meno (da 7.825 a 4.699)</title></circle>
-<circle cx="298.3" cy="649.0" r="1.75" fill="#f7f8f9"/>
-<text x="576" y="647.0" font-size="13" font-weight="700" fill="#1a1a1a">−39,9%</text>
-<text x="576" y="663.0" font-size="12" fill="#6b6b6b">3.126 sportelli in meno</text>
-<circle cx="46" cy="157.5" r="26.5" fill="none" stroke="#6b6b6b" stroke-width="0.75"/>
-<line x1="46" x2="83" y1="131.1" y2="131.1" stroke="#6b6b6b" stroke-width="0.5" stroke-dasharray="2 2"/>
-<text x="87" y="135.1" font-size="12" fill="#6b6b6b">3.000</text>
-<circle cx="46" cy="168.7" r="15.3" fill="none" stroke="#6b6b6b" stroke-width="0.75"/>
-<line x1="46" x2="83" y1="153.5" y2="153.5" stroke="#6b6b6b" stroke-width="0.5" stroke-dasharray="2 2"/>
-<text x="87" y="157.5" font-size="12" fill="#6b6b6b">1.000</text>
-<text x="133" y="161.5" font-size="12" fill="#6b6b6b">Area del cerchio: sportelli chiusi tra il 2015 e il 2025</text>
-</g>
-<text class="s" x="16" y="728" font-size="12" fill="#6b6b6b">Comuni sui confini del 2025: i comuni fusi dal 2015 sono sommati nel comune attuale. Classi di popolazione al 1°</text>
-<text class="s" x="16" y="744" font-size="12" fill="#6b6b6b">gennaio 2025.</text>
-<line x1="16" x2="744" y1="762" y2="762" stroke="#e3e3e3"/>
-<text class="s" x="16" y="780" font-size="12" fill="#6b6b6b">Fonte: Banca d'Italia (TDB10195); Istat, popolazione al 1° gennaio 2025</text>
-<text class="s" x="744" y="780" text-anchor="end" font-size="12" fill="#6b6b6b">Elaborazione Radar – QN</text>
-</svg>
+  <header>
+    <h1 class="r-title" id="titolo">&nbsp;</h1>
+    <p class="r-sub">Variazione del numero di sportelli bancari tra fine 2015 e fine 2025, per classe di popolazione del comune</p>
+  </header>
+  <figure class="r-chart" id="dot"></figure>
+  <p class="r-note">Area del cerchio proporzionale agli sportelli chiusi. Comuni sui confini del 2025: i comuni fusi dal 2015 sono sommati nel comune attuale. Classi di popolazione al 1° gennaio 2025.</p>
+  <footer class="r-foot">
+    <span>Fonte: Banca d'Italia (TDB10195); Istat, popolazione al 1° gennaio 2025</span>
+    <span>Elaborazione Radar – QN</span>
+  </footer>
 </main>
+<script>
+(function () {
+  var R = Radar, fmt = R.fmt;
+  function pc(v) { return "−" + fmt(Math.abs(v), 1) + "%"; }
+
+  R.loadCSV("../data/calo-classi-comune.csv").then(function (rows) {
+    var it = null, cls = [];
+    rows.forEach(function (r) {
+      var a = R.num(r["Sportelli 2015"]), z = R.num(r["Sportelli 2025"]);
+      var d = { k: r["Classe di popolazione"], a: a, z: z, n: a - z, v: (z / a - 1) * 100 };
+      if (d.k === "Italia") it = d; else cls.push(d);
+    });
+    var worst = cls.reduce(function (m, d) { return d.v < m.v ? d : m; });
+    // titolo calcolato: "uno sportello su due" se il calo supera il 45%
+    d3.select("#titolo").text(worst.v <= -45
+      ? "Nei paesi sotto i 2mila abitanti ha chiuso uno sportello su due"
+      : "Nei paesi sotto i 2mila abitanti ha chiuso il " + fmt(-worst.v, 0) + "% degli sportelli");
+    var NMAX = d3.max(cls, function (d) { return d.n; });
+
+    var host = document.getElementById("dot"), tip = R.tooltip(host), dots;
+    R.dismissOutside(host, function () { tip.hide(); if (dots) dots.classed("is-dimmed", false); });
+
+    R.responsive(host, function (W, phase) {
+      var narrow = R.isNarrow(W);
+      var labW = narrow ? 86 : 124, valW = narrow ? 86 : 168, ROW = narrow ? 52 : 60, RMAX = narrow ? 21 : 27;
+      var rad = function (n) { return Math.sqrt(n / NMAX) * RMAX; };
+      var x0 = labW + RMAX, x1 = W - valW - 8;
+      var x = d3.scaleLinear().domain([-60, 0]).range([x0, x1]);   // zero a destra: il calo cresce verso sinistra
+      var top = 112, H = top + ROW * cls.length + 30;
+      d3.select(host).select("svg").remove();
+      var svg = d3.select(host).insert("svg", ".r-tip").attr("width", W).attr("height", H).attr("role", "img")
+        .attr("aria-label", "Dot plot: calo degli sportelli dal 2015 al 2025 per classe di comune, area del cerchio proporzionale agli sportelli chiusi. " +
+          cls.map(function (d) { return d.k + " " + pc(d.v) + ", " + fmt(d.n, 0) + " in meno"; }).join("; ") + ". Italia " + pc(it.v) + ".");
+      svg.append("title").text("Calo degli sportelli per classe di popolazione del comune");
+
+      // legenda delle aree: due cerchi annidati
+      var lg = svg.append("g").attr("transform", "translate(" + (RMAX + 2) + ",0)");
+      [3000, 1000].forEach(function (n) {
+        var r = rad(n);
+        lg.append("circle").attr("cx", 0).attr("cy", 2 * RMAX + 2 - r).attr("r", r).style("fill", "none").style("stroke", "var(--ink-2)").attr("stroke-width", 0.75);
+        lg.append("line").attr("x1", 0).attr("x2", RMAX + 8).attr("y1", 2 * RMAX + 2 - 2 * r).attr("y2", 2 * RMAX + 2 - 2 * r)
+          .style("stroke", "var(--ink-2)").attr("stroke-width", 0.5).attr("stroke-dasharray", "2 2");
+        lg.append("text").attr("class", "tick-label").attr("x", RMAX + 12).attr("y", 2 * RMAX + 6 - 2 * r).text(fmt(n, 0));
+      });
+      lg.append("text").attr("class", "tick-label").attr("x", RMAX + 52).attr("y", 2 * RMAX + 6 - rad(3000))
+        .text(narrow ? "sportelli chiusi" : "Area del cerchio: sportelli chiusi tra il 2015 e il 2025");
+
+      // freccia: il calo cresce da destra verso sinistra
+      var g = svg.append("g");
+      g.append("defs").append("marker").attr("id", "punta").attr("viewBox", "0 0 10 10").attr("refX", 9).attr("refY", 5)
+        .attr("markerWidth", 7).attr("markerHeight", 7).attr("orient", "auto-start-reverse")
+        .append("path").attr("d", "M0,0L10,5L0,10Z").style("fill", "var(--ink)");
+      var ay = top - 40;
+      g.append("line").attr("x1", x(0)).attr("x2", x(-60) + 2).attr("y1", ay).attr("y2", ay)
+        .style("stroke", "var(--ink)").attr("stroke-width", 1.25).attr("marker-end", "url(#punta)");
+      g.append("text").attr("class", "series-label").attr("x", (x(0) + x(-60)) / 2).attr("y", ay - 7).attr("text-anchor", "middle")
+        .style("font-size", "12px").text("Calo più forte");
+
+      // griglia e asse
+      var yb = top + ROW * cls.length;
+      [-60, -40, -20, 0].forEach(function (t) {
+        g.append("line").attr("class", t === 0 ? "baseline" : null).attr("x1", x(t)).attr("x2", x(t)).attr("y1", top - 6).attr("y2", yb)
+          .style("stroke", t === 0 ? "var(--grey-light)" : "var(--rule)");
+        g.append("text").attr("class", "tick-label").attr("x", x(t)).attr("y", top - 14).attr("text-anchor", "middle").text(t === 0 ? "0%" : "−" + (-t) + "%");
+      });
+      // media italiana
+      g.append("line").attr("x1", x(it.v)).attr("x2", x(it.v)).attr("y1", top - 4).attr("y2", yb + 6)
+        .style("stroke", "var(--ink)").attr("stroke-dasharray", "3 3");
+      g.append("text").attr("class", "tick-label").attr("x", x(it.v)).attr("y", yb + 22).attr("text-anchor", "middle")
+        .style("fill", "var(--ink)").style("paint-order", "stroke").style("stroke", "var(--bg)").style("stroke-width", "4px").text("Italia " + pc(it.v));
+
+      var rowsG = g.selectAll("g.riga").data(cls).join("g").attr("class", "riga")
+        .attr("transform", function (d, i) { return "translate(0," + (top + i * ROW + ROW / 2) + ")"; });
+      rowsG.append("line").attr("x1", x0 - RMAX).attr("x2", x1).style("stroke", "var(--rule)").attr("stroke-width", 0.75);
+      rowsG.append("text").attr("class", "tick-label").attr("x", 0).attr("dy", "0.35em")
+        .style("fill", "var(--ink)").style("font-size", narrow ? "12px" : "13px").style("font-weight", function (d) { return d === worst ? 600 : 400; })
+        .text(function (d) { return d.k; });
+      dots = rowsG.append("circle").attr("class", "mark").attr("cx", function (d) { return x(d.v); })
+        .style("fill", function (d) { return d === worst ? "var(--blue)" : "var(--grey)"; })
+        .style("fill-opacity", function (d) { return d === worst ? 0.92 : 0.55; })
+        .style("stroke", "var(--bg)").attr("stroke-width", 1);
+      R.enter(dots, phase, function (s) { s.attr("r", 0); }, function (s) { s.attr("r", function (d) { return rad(d.n); }); });
+      rowsG.append("circle").attr("cx", function (d) { return x(d.v); }).attr("r", 1.75).style("fill", "var(--bg)");
+      var vx = W - valW + 6;
+      var v1 = rowsG.append("text").attr("x", vx).attr("y", -2).style("font-size", "13px").style("font-weight", 700).style("fill", "var(--ink)");
+      v1.each(function (d) { R.countUp(d3.select(this), d.v, pc, phase); });
+      rowsG.append("text").attr("class", "tick-label").attr("x", vx).attr("y", 14)
+        .text(function (d) { return fmt(d.n, 0) + (narrow ? " in meno" : " sportelli in meno"); });
+
+      rowsG.append("rect").attr("class", "hit").attr("x", 0).attr("y", -ROW / 2).attr("width", W).attr("height", ROW)
+        .on("pointerenter pointerdown", function (ev, d) {
+          dots.classed("is-dimmed", function (q) { return q !== d; });
+          var i = cls.indexOf(d);
+          tip.show(R.tipHTML({ title: d.k, value: pc(d.v), unit: "dal 2015 al 2025",
+            rows: [["Sportelli 2015", fmt(d.a, 0)], ["Sportelli 2025", fmt(d.z, 0)], ["Chiusi", fmt(d.n, 0)]] }),
+            x(d.v), top + i * ROW + ROW / 2);
+        })
+        .on("pointerleave", function (ev) { if (ev.pointerType === "mouse") { tip.hide(); dots.classed("is-dimmed", false); } });
+    });
+  }).catch(function (e) { R.fail("#dot", e); });
+})();
+</script>
 </body>
 </html>
