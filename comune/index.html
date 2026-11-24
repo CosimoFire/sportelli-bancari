@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quanti sportelli ha il tuo comune? – Radar QN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,700&display=swap">
+<link rel="stylesheet" href="../assets/radar.css">
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="../assets/radar.js"></script>
+<style>
+  .cerca { position: relative; margin: 24px 0 0; }
+  .cerca label { display: block; font: 600 13px var(--sans); color: var(--ink); margin: 0 0 6px; }
+  .cerca input {
+    width: 100%; font: 500 16px var(--sans); color: var(--ink); background: var(--bg);
+    border: 1px solid var(--ink-2); border-radius: 4px; padding: 10px 12px;
+  }
+  .cerca input:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .cerca input::placeholder { color: var(--ink-2); }
+  .sugg {
+    position: absolute; left: 0; right: 0; top: 100%; z-index: 5; margin: 4px 0 0; padding: 4px; list-style: none;
+    background: var(--tip-bg); border: 1px solid var(--rule); border-radius: 4px; max-height: 300px; overflow: auto;
+    font: 14px var(--sans); color: var(--ink);
+  }
+  .sugg[hidden] { display: none; }
+  .sugg li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 9px; border-radius: 3px; cursor: pointer; }
+  .sugg li span { color: var(--ink-2); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .sugg li[aria-selected="true"], .sugg li:hover { background: var(--rule); }
+  .luogo { margin: 28px 0 0; }
+  .luogo h2 { font: 700 24px/1.15 var(--serif); color: var(--title); margin: 0; }
+  .luogo p { margin: 3px 0 0; font: 13px var(--sans); color: var(--ink-2); }
+  .frase { font: 16px/1.5 var(--sans); color: var(--ink); margin: 14px 0 0; max-width: 62ch; }
+  .frase b { font-weight: 700; }
+  .contesto { font: 14px/1.45 var(--sans); color: var(--ink-2); margin: 18px 0 0; }
+  .contesto b { color: var(--ink); font-weight: 600; }
+  .r-big { margin-top: 16px; }
+</style>
+</head>
+<body>
+<main class="radar">
+  <header>
+    <h1 class="r-title">Quanti sportelli ha il tuo comune?</h1>
+    <p class="r-sub" id="sub">&nbsp;</p>
+  </header>
+
+  <div class="cerca">
+    <label for="q">Cerca un comune</label>
+    <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Es. Jesi, Rieti, Olbia…" role="combobox"
+           aria-expanded="false" aria-controls="sugg" aria-autocomplete="list">
+    <ul id="sugg" class="sugg" role="listbox" hidden></ul>
+  </div>
+
+  <section id="scheda" aria-live="polite">
+    <div class="luogo"><h2 id="nome">&nbsp;</h2><p id="info"></p></div>
+    <div class="r-big" aria-hidden="true">
+      <span class="r-big__num" id="big-num">&nbsp;</span>
+      <span class="r-big__label" id="big-label"></span>
+    </div>
+    <p class="frase" id="frase"></p>
+    <figure class="r-chart" id="anni">
+      <p class="r-chart__head">Sportelli a fine anno</p>
+    </figure>
+    <figure class="r-chart" id="dens">
+      <p class="r-chart__head">Sportelli ogni 10mila abitanti, 2025</p>
+    </figure>
+    <figure class="r-chart" id="var">
+      <p class="r-chart__head">Variazione degli sportelli, 2015-2025</p>
+    </figure>
+    <p class="contesto" id="contesto"></p>
+  </section>
+
+  <p class="r-note">Comuni sui confini in vigore nel 2025: i comuni nati da fusioni sommano gli sportelli dei comuni d'origine. Sono contati solo gli sportelli bancari, non gli uffici postali né i bancomat. Per aprire lo strumento su un comune si può aggiungere all'indirizzo <code>?comune=Nome</code>.</p>
+  <footer class="r-foot">
+    <span>Fonte: Banca d'Italia (TDB10195, sportelli al 31 dicembre); Istat, popolazione al 1° gennaio 2026 (stima)</span>
+    <span>Elaborazione Radar – QN</span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var R = Radar, fmt = R.fmt;
+  var YRS = d3.range(2015, 2026);
+  var f0 = function (v) { return fmt(v, 0); }, f1 = function (v) { return fmt(v, 1); };
+  var norm = function (s) { return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, ""); };
+  var pct = function (a, b) { return a ? (b - a) / a * 100 : 0; };
+  var dens = function (s, pop) { return pop ? s / pop * 1e4 : 0; };
+  var segno = function (v, d) { return (v > 0 ? "+" : "") + fmt(v, d === undefined ? 1 : d); };
+
+  d3.json("../data/comuni.json").then(function (D) {
+    // comuni: [nome, sigla, provincia, regione, popolazione 1/1/2026, capoluogo, sportelli 2015..2025]
+    var C = D.c.map(function (r, i) {
+      return { i: i, n: r[0], sg: r[1], pi: r[2], pr: D.p[r[2]], rg: D.r[r[3]], pop: r[4], cap: r[5] === 1, s: r.slice(6), k: norm(r[0]) };
+    });
+    var IT = { pop: 0, s: YRS.map(function () { return 0; }), n: 0, zero: 0 };
+    var PROV = D.p.map(function () { return { pop: 0, s: YRS.map(function () { return 0; }), n: 0, zero: 0 }; });
+    C.forEach(function (c) {
+      var p = PROV[c.pi]; p.pop += c.pop; p.n++; IT.pop += c.pop; IT.n++;
+      if (c.s[10] === 0) { p.zero++; IT.zero++; }
+      c.s.forEach(function (v, j) { p.s[j] += v; IT.s[j] += v; });
+    });
+    d3.select("#sub").text("In dieci anni in Italia ha chiuso più di uno sportello bancario su tre: erano " + f0(IT.s[0]) +
+      " a fine 2015, sono " + f0(IT.s[10]) + " a fine 2025. Cerca il tuo comune per vedere com'è andata.");
+
+    function frase(c) {
+      var a = c.s[0], b = c.s[10], d = b - a;
+      if (d3.max(c.s) === 0) return "Tra il 2015 e il 2025 a " + c.n + " non c'è mai stato uno sportello bancario.";
+      if (b === 0) {
+        var last = -1; c.s.forEach(function (v, j) { if (v > 0) last = j; });
+        return c.n + " è rimasto senza banca: alla fine del " + YRS[last + 1] + " non c'era più nessuno sportello. Nel 2015 " +
+          (a === 1 ? "ce n'era uno." : "ce n'erano " + f0(a) + ".");
+      }
+      if (a === 0) return "Nel 2015 non c'era nessuno sportello, alla fine del 2025 " + (b === 1 ? "ce n'è uno." : "ce ne sono " + f0(b) + ".");
+      if (d < 0) {
+        // i numeri sono già nel big number: la frase dice quanti ne sono spariti
+        var t = "<b>" + (-d === 1 ? "Uno sportello in meno" : f0(-d) + " sportelli in meno") + "</b> in dieci anni" +
+          (b === 1 ? ": ne resta uno solo." : ".");
+        if (b === 1) t += " Se chiude anche l'ultimo, il comune resta senza banca.";
+        return t;
+      }
+      if (d === 0) return "Il numero di sportelli è rimasto lo stesso: " + f0(b) + " " + (b === 1 ? "sportello" : "sportelli") + ", come nel 2015.";
+      return "In controtendenza: da " + f0(a) + " a " + f0(b) + " sportelli.";
+    }
+
+    // ---- grafico a gradini: il numero resta piatto fino all'anno della chiusura ----
+    var hostA = document.getElementById("anni"), cur = null;
+    R.responsive(hostA, function (W, phase) { if (cur) disegnaAnni(W, cur, phase); });
+    function disegnaAnni(W, c, phase) {
+      var narrow = R.isNarrow(W);
+      var m = { top: 24, right: 12, bottom: 26, left: 12 }, H = narrow ? 190 : 220;
+      var x = d3.scalePoint().domain(YRS).range([m.left, W - m.right]);
+      var y = d3.scaleLinear().domain([0, Math.max(1, d3.max(c.s))]).nice().range([H - m.bottom, m.top]);
+      d3.select(hostA).select("svg").remove();
+      var svg = d3.select(hostA).append("svg").attr("width", W).attr("height", H).attr("role", "img")
+        .attr("aria-label", "Sportelli a " + c.n + " per anno dal 2015 al 2025: " + c.s.map(f0).join(", ") + ".");
+      svg.append("line").attr("class", "baseline").attr("x1", m.left).attr("x2", W - m.right).attr("y1", y(0) + 0.5).attr("y2", y(0) + 0.5);
+      var line = d3.line().curve(d3.curveStepAfter).x(function (d, j) { return x(YRS[j]); }).y(function (d) { return y(d); });
+      var p = svg.append("path").datum(c.s).attr("d", line).style("fill", "none").style("stroke", "var(--blue)").attr("stroke-width", 2.5);
+      var len = p.node().getTotalLength();
+      R.enter(p, phase, function (s) { s.attr("stroke-dasharray", len + " " + len).attr("stroke-dashoffset", len); },
+        function (s) { s.attr("stroke-dashoffset", 0); });
+      var key = function (j) { return j === 0 || j === 10; };
+      svg.append("g").selectAll("circle").data(c.s).join("circle")
+        .attr("cx", function (d, j) { return x(YRS[j]); }).attr("cy", function (d) { return y(d); })
+        .attr("r", function (d, j) { return key(j) ? 4.5 : 3; })
+        .style("fill", function (d, j) { return key(j) ? "var(--blue)" : "var(--bg)"; }).style("stroke", "var(--blue)").attr("stroke-width", 1.75);
+      var vis = narrow ? function (j) { return key(j) || c.s[j] !== c.s[j - 1]; } : function () { return true; };
+      svg.append("g").selectAll("text").data(c.s).join("text")
+        .attr("class", function (d, j) { return key(j) ? "val-label" : "tick-label"; })
+        .attr("x", function (d, j) { return j === 10 ? x(YRS[j]) : x(YRS[j]) + 5; }).attr("y", function (d) { return y(d) - 8; })
+        .attr("text-anchor", function (d, j) { return j === 10 ? "end" : "start"; })
+        .style("paint-order", "stroke").style("stroke", "var(--bg)").style("stroke-width", "3px")
+        .text(function (d, j) { return vis(j) ? f0(d) : ""; });
+      svg.append("g").selectAll("text").data(YRS).join("text").attr("class", "tick-label")
+        .attr("x", function (d) { return x(d); }).attr("y", H - 6).attr("text-anchor", "middle")
+        .text(function (d, j) { return key(j) ? d : (narrow && j % 2 ? "" : "’" + String(d).slice(2)); });
+    }
+
+    // ---- dot plot: comune, provincia e Italia sulla stessa scala, che include lo zero ----
+    var DP = {};   // stato di ciascun dot plot: si registra il ridimensionamento una volta sola
+    function dotPlot(hostId, righe, fmtV) {
+      var host = document.getElementById(hostId);
+      if (!righe) { d3.select(host).style("display", "none"); return; }
+      d3.select(host).style("display", null);
+      var nuovo = !DP[hostId];
+      DP[hostId] = { righe: righe, fmtV: fmtV };
+      if (nuovo) R.responsive(host, function (W) { disegnaDot(host, W, DP[hostId].righe, DP[hostId].fmtV); });
+      else disegnaDot(host, Math.floor(host.getBoundingClientRect().width), righe, fmtV);
+    }
+    function disegnaDot(host, W, righe, fmtV) {
+      (function () {
+        var narrow = R.isNarrow(W), labW = narrow ? 112 : 170, valW = 62, ROW = 30;
+        var vs = righe.map(function (r) { return r.v; });
+        var x = d3.scaleLinear().domain([Math.min(0, d3.min(vs)), Math.max(0, d3.max(vs))]).nice().range([labW + 8, W - valW - 8]);
+        var H = ROW * righe.length + 22;
+        d3.select(host).select("svg").remove();
+        var svg = d3.select(host).append("svg").attr("width", W).attr("height", H).attr("role", "img")
+          .attr("aria-label", righe.map(function (r) { return r.l + " " + fmtV(r.v); }).join(", ") + ".");
+        svg.append("line").attr("x1", x(0)).attr("x2", x(0)).attr("y1", 2).attr("y2", ROW * righe.length)
+          .style("stroke", "var(--grey-light)").attr("stroke-dasharray", "2 2");
+        var g = svg.selectAll("g").data(righe).join("g").attr("transform", function (d, i) { return "translate(0," + (i * ROW + ROW / 2) + ")"; });
+        g.append("line").attr("x1", x.range()[0]).attr("x2", x.range()[1]).style("stroke", "var(--rule)");
+        g.append("text").attr("class", "tick-label").attr("x", 0).attr("dy", "0.35em")
+          .style("fill", "var(--ink)").style("font-size", "13px").style("font-weight", function (d) { return d.me ? 600 : 400; })
+          .text(function (d) { return d.l; });
+        g.append("circle").attr("cx", function (d) { return x(d.v); }).attr("r", function (d) { return d.me ? 7 : 5.5; })
+          .style("fill", function (d) { return d.me ? "var(--blue)" : "var(--bg)"; })
+          .style("stroke", function (d) { return d.me ? "var(--blue)" : "var(--grey)"; }).attr("stroke-width", 2);
+        g.append("text").attr("class", function (d) { return d.me ? "val-label" : "tick-label"; }).attr("x", W).attr("dy", "0.35em")
+          .attr("text-anchor", "end").style("font-size", "13px").text(function (d) { return fmtV(d.v); });
+        x.domain().forEach(function (t, i) {
+          svg.append("text").attr("class", "tick-label").attr("x", x(t)).attr("y", H - 4)
+            .attr("text-anchor", i ? "end" : "start").text(fmtV(t));
+        });
+      })();
+    }
+
+    function mostra(c) {
+      cur = c;
+      var a = c.s[0], b = c.s[10], p = PROV[c.pi];
+      d3.select("#nome").text(c.n);
+      d3.select("#info").text("Provincia di " + c.pr + " · " + c.rg + " · " + f0(c.pop) + " abitanti" + (c.cap ? " · capoluogo" : ""));
+      var bigNum = d3.select("#big-num");
+      d3.select("#big-label").text((b === 1 ? "sportello" : "sportelli") + " a fine 2025" +
+        (a ? (b === a ? ", come nel 2015" : ", erano " + f0(a) + " nel 2015 (" + segno(pct(a, b)) + "%)") : ""));
+      if (R.reduced) bigNum.text(f0(b)); else R.countUp(bigNum, b, f0, "play");
+      d3.select("#frase").html(frase(c));
+      // senza sportelli in tutto il periodo il grafico anno per anno non dice niente: si nasconde
+      d3.select(hostA).style("display", d3.max(c.s) ? null : "none");
+      if (d3.max(c.s)) disegnaAnni(Math.floor(hostA.getBoundingClientRect().width), c, R.reduced ? "static" : "play");
+      var dc = dens(b, c.pop), dp = dens(p.s[10], p.pop), di = dens(IT.s[10], IT.pop);
+      dotPlot("dens", [{ l: c.n, v: dc, me: true }, { l: "Provincia (" + c.sg + ")", v: dp }, { l: "Italia", v: di }], f1);
+      dotPlot("var", a ? [{ l: c.n, v: pct(a, b), me: true }, { l: "Provincia (" + c.sg + ")", v: pct(p.s[0], p.s[10]) },
+        { l: "Italia", v: pct(IT.s[0], IT.s[10]) }] : null, function (v) { return segno(v, 1) + "%"; });
+      d3.select("#contesto").html("Nella provincia di " + c.pr + ", <b>" + f0(p.zero) + " comuni su " + f0(p.n) +
+        "</b> (" + fmt(p.zero / p.n * 100, 0) + "%) non hanno più uno sportello bancario. In Italia sono " + f0(IT.zero) + " su " + f0(IT.n) + ".");
+    }
+
+    // ---- ricerca con suggerimenti e tastiera ----
+    var q = document.getElementById("q"), ul = document.getElementById("sugg"), hits = [], sel = -1;
+    function cerca(t) {
+      var k = norm(t); if (!k) return [];
+      var inizio = [], dentro = [];
+      C.forEach(function (c) { var i = c.k.indexOf(k); if (i === 0) inizio.push(c); else if (i > 0) dentro.push(c); });
+      var by = function (x, y) { return x.k.length - y.k.length || y.pop - x.pop; };
+      return inizio.sort(by).concat(dentro.sort(by)).slice(0, 8);
+    }
+    function elenco() {
+      ul.innerHTML = hits.map(function (c, j) {
+        return '<li role="option" id="o' + j + '" aria-selected="' + (j === sel) + '" data-i="' + c.i + '">' + c.n +
+          " <span>" + c.sg + " · " + f0(c.s[10]) + " sport.</span></li>";
+      }).join("");
+      ul.hidden = !hits.length; q.setAttribute("aria-expanded", hits.length ? "true" : "false");
+      q.setAttribute("aria-activedescendant", sel >= 0 ? "o" + sel : "");
+    }
+    function scegli(c) { mostra(c); q.value = c.n + " (" + c.sg + ")"; hits = []; sel = -1; elenco(); }
+    q.addEventListener("input", function () { hits = cerca(q.value); sel = hits.length ? 0 : -1; elenco(); });
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown" && hits.length) { sel = (sel + 1) % hits.length; elenco(); e.preventDefault(); }
+      else if (e.key === "ArrowUp" && hits.length) { sel = (sel - 1 + hits.length) % hits.length; elenco(); e.preventDefault(); }
+      else if (e.key === "Enter" && sel >= 0) { scegli(hits[sel]); e.preventDefault(); }
+      else if (e.key === "Escape") { hits = []; elenco(); }
+    });
+    ul.addEventListener("mousedown", function (e) { var li = e.target.closest("li"); if (li) { scegli(C[+li.dataset.i]); e.preventDefault(); } });
+    q.addEventListener("blur", function () { setTimeout(function () { hits = []; elenco(); }, 150); });
+
+    // comune iniziale: ?comune=Nome nell'indirizzo, altrimenti un esempio
+    var par = new URLSearchParams(location.search).get("comune");
+    var start = par && (C.find(function (c) { return c.k === norm(par); }) || cerca(par)[0]);
+    mostra(start || C.find(function (c) { return c.n === "Jesi"; }));
+  }).catch(function (e) { R.fail("#scheda", e); });
+})();
+</script>
+</body>
+</html>
